@@ -10,4 +10,5 @@ public class SeleniumHomePage {
     public SeleniumHomePage(WebDriver driver) { }
     @UI("#user-icon")
     public JS userIcon;
+    @UI(".login-txt") public JS loginFailedText;
 }

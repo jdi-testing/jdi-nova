@@ -30,7 +30,7 @@ public class LoginFlow {
         atHomePage();
         seleniumHomePage.userIcon.click();
         loginAs(loginUser);
-        seleniumHomePage.loginFailedText.should(have(text("* Login Faild")));
+        seleniumHomePage.loginFailedText.should(have(text("* Login Failed")));
     }
 
     public void successfulLoginAndLogout() {

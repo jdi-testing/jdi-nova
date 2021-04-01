@@ -13,6 +13,9 @@ public class LoginUser extends DataClass<LoginUser> {
     public static LoginUser EmptyUser = new LoginUser().set(
             u -> {u.name = ""; u.password = ""; });
 
+    public static LoginUser LongNameUser = new LoginUser().set(
+            u -> {u.name = "hsgfjghqwaefgudshsgfjghqwaefgudsiugbwabDLusdazhiuhwighdsauigdsagiugbewdbgiugbwabDLusdazhihsgfjghqwaefgudsiugbwabDLusdazhiuhwighdsauigdsagiugbewdbguhwighdsauigdsagiugbewdbghsgfjghqwaefgudsiugbwabDLusdazhiuhwighdsauigdsagiugbewdbghsgfjghqwaefgudsiugbwabDLusdazhiuhhsgfjghqwaefgudsiugbwabDLusdazhiuhwighdsauigdsagiugbewdbgwighdsauigdsagiugbewdbghsgfjghqwaefgudsiugbwabDLusdazhiuhwighdsauigdsagiugbewdbghsgfjghqwaefgudsiugbwabDLusdazhiuhwighdsauigdsagiugbewdbghsgfjghqwaefgudsiugbwabDLusdazhiuhwighdsauigdsagiugbewdbghsgfjghqwaefgudsiugbwabDLusdazhiuhwighdsauigdsagiugbewdbghsgfjghqwaefgudsiugbwabDLusdazhiuhwighdhsgfjghqwaefgudsiugbwabDLusdazhiuhwighdsauigdsagiugbewdbgsauigdsagiugbewdbghsgfjghqwaefgudsiugbwabDLusdazhiuhwighdsauigdsagiugbewdbg"; u.password = ""; });
+
     @UI public String name;
     @UI public String password;
 

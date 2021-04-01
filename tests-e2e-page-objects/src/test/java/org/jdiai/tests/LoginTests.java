@@ -23,15 +23,21 @@ public class LoginTests implements TestInit {
     }
 
     @Test
-    public void emptyUserLogin() {
+    public void emptyUser() {
         LoginFlow loginFlow = new LoginFlow();
         loginFlow.incorrectUserLogin(EmptyUser);
     }
 
     @Test
-    public void nonExistentUserLogin() {
+    public void nonExistentUser() {
         LoginFlow loginFlow = new LoginFlow();
         loginFlow.incorrectUserLogin(OttoNormalburger);
+    }
+
+    @Test
+    public void userHasTooLongName() {
+        LoginFlow loginFlow = new LoginFlow();
+        loginFlow.incorrectUserLogin(LongNameUser);
     }
 
     @Test

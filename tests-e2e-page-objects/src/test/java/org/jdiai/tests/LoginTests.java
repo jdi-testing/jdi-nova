@@ -10,39 +10,35 @@ import static org.jdiai.entities.LoginUser.*;
 @Listeners(TestNGListener.class)
 public class LoginTests implements TestInit {
 
+    LoginFlow loginFlow = new LoginFlow();
+
     @Test
     public void successfulLogin() {
-        LoginFlow loginFlow = new LoginFlow();
         loginFlow.successfulLogin();
     }
 
     @Test
     public void successfulLoginWithGivenUser() {
-        LoginFlow loginFlow = new LoginFlow();
         loginFlow.successfulLogin(Roman);
     }
 
     @Test
     public void emptyUser() {
-        LoginFlow loginFlow = new LoginFlow();
         loginFlow.incorrectUserLogin(EmptyUser);
     }
 
     @Test
     public void nonExistentUser() {
-        LoginFlow loginFlow = new LoginFlow();
         loginFlow.incorrectUserLogin(OttoNormalburger);
     }
 
     @Test
     public void userHasTooLongName() {
-        LoginFlow loginFlow = new LoginFlow();
         loginFlow.incorrectUserLogin(LongNameUser);
     }
 
     @Test
-    public void successfulLoginAndLougout() {
-        LoginFlow loginFlow = new LoginFlow();
+    public void successfulLoginAndLogout() {
         loginFlow.successfulLoginAndLogout();
     }
 }

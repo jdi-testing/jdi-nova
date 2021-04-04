@@ -1,7 +1,6 @@
 package org.jdiai.tests;
 
 import org.jdiai.TestInit;
-import org.jdiai.flowmodels.LoginFlow;
 import org.jdiai.testng.TestNGListener;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
@@ -9,8 +8,6 @@ import static org.jdiai.entities.LoginUser.*;
 
 @Listeners(TestNGListener.class)
 public class LoginTests implements TestInit {
-
-    LoginFlow loginFlow = new LoginFlow();
 
     @Test
     public void successfulLogin() {

@@ -1,5 +1,6 @@
 package org.jdiai;
 
+import org.jdiai.flowmodels.LoginFlow;
 import org.jdiai.site.HomePage;
 import org.jdiai.site.JDISite;
 import org.testng.annotations.AfterSuite;
@@ -16,6 +17,8 @@ import static org.jdiai.tools.TestIDLocators.SMART_LOCATOR;
 
 public interface TestInit {
     default HomePage homePage() { return initElements(HomePage.class); }
+
+    LoginFlow loginFlow = new LoginFlow();
 
     @BeforeSuite(alwaysRun = true)
     default void setUp() {

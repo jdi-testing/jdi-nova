@@ -5,13 +5,13 @@ import com.epam.jdi.tools.func.JFunc2;
 import com.epam.jdi.tools.map.MapArray;
 import com.epam.jdi.tools.pairs.Pair;
 import org.jdiai.JSTalk;
+import org.jdiai.Section;
 import org.jdiai.WebPage;
 import org.jdiai.annotations.Site;
 import org.jdiai.interfaces.HasCore;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import java.lang.System.Logger;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -30,12 +30,17 @@ public class PageFactory {
         PageFactoryUtils::createPageObject;
     public static JFunc2<Class<?>, Field, Object> CREATE_WEB_PAGE =
         PageFactoryUtils::createWebPage;
-    public static JFunc1<Field, Boolean> JS_FIELDS =
-        f -> isInterface(f.getType(), WebElement.class) || isClass(f, HasCore.class)
+    public static JFunc1<Field, Boolean> JS_FIELD =
+        f -> isInterface(f.getType(), WebElement.class) || isInterface(f.getType(), HasCore.class)
             || isInterface(f.getType(), List.class);
-    public static JFunc1<Field, Boolean> IS_UI_OBJECT = f -> any(f.getType().getDeclaredFields(), JS_FIELDS);
+    public static JFunc1<Field, Boolean> IS_UI_OBJECT =
+        field -> any(field.getType().getDeclaredFields(),
+            f -> isInterface(field.getType(), HasCore.class)
+                ? isClass(field.getType(), Section.class)
+                : JS_FIELD.execute(f));
+
     public static JFunc1<Field, Boolean> FIELDS_FILTER =
-        f -> JS_FIELDS.execute(f) || IS_UI_OBJECT.execute(f);
+        f -> JS_FIELD.execute(f) || IS_UI_OBJECT.execute(f);
     public static JFunc1<Field, Boolean> PAGES_FILTER =
         f -> isStatic(f.getModifiers()) && (isClass(f.getType(), WebPage.class)
             || IS_UI_OBJECT.execute(f));
@@ -43,9 +48,8 @@ public class PageFactory {
         PageFactoryUtils::getFieldName;
     public static JFunc1<Field, By> GET_LOCATOR =
         PageFactoryUtils::getLocatorFromField;
-    public static Logger pageInitLogger = System.out::println;
 
-    public static void openSite(Class<?> cl) {
+    public static void initSite(Class<?> cl) {
         if (cl.isAnnotationPresent(Site.class)) {
             DOMAIN = cl.getAnnotation(Site.class).value();
         }
@@ -53,10 +57,13 @@ public class PageFactory {
         for (Field field : pages) {
             Class<?> fieldClass = field.getType();
             Object page = isClass(fieldClass, WebPage.class)
-                ? CREATE_WEB_PAGE.execute(fieldClass, field)
-                : initElements(fieldClass);
+                    ? CREATE_WEB_PAGE.execute(fieldClass, field)
+                    : initElements(fieldClass);
             setFieldValue(field, null, page);
         }
+    }
+    public static void openSite(Class<?> cl) {
+        initSite(cl);
         if (DOMAIN != null) {
             JSTalk.openSite();
         }

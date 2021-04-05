@@ -51,8 +51,8 @@ public class PageObjectsInitTests implements TestInit {
         loginAs(Roman);
         contactPage.open();
         contactPage.contactForm.submit(Triss);
-        contactPage.lastNameInLog.should(have(text("Last Name: " + Triss.lastName)));
-        contactPage.descriptionInLog.should(have(text("Description: " + Triss.description)));
+        contactPage.lastNameInResult.should(have(text("Last Name: " + Triss.lastName)));
+        contactPage.descriptionInResult.should(have(text("Description: " + Triss.description)));
     }
 
     @Test
@@ -64,8 +64,8 @@ public class PageObjectsInitTests implements TestInit {
         contactPage.open();
         contactPage.contactForm.fill(Triss);
         contactPage.contacts.submitButton.click();
-        contactPage.lastNameInLog.should(have(text("Last Name: " + Triss.lastName)));
-        contactPage.descriptionInLog.should(have(text("Description: " + Triss.description)));
+        contactPage.lastNameInResult.should(have(text("Last Name: " + Triss.lastName)));
+        contactPage.descriptionInResult.should(have(text("Description: " + Triss.description)));
     }
 
     public void loginScenario(HomePage page) {
@@ -75,8 +75,8 @@ public class PageObjectsInitTests implements TestInit {
         loginAs(Roman);
         contactPage.open();
         contactPage.contactForm.submit(Triss);
-        contactPage.lastNameInLog.should(have(text("Last Name: " + Triss.lastName)));
-        contactPage.descriptionInLog.should(have(text("Description: " + Triss.description)));
+        contactPage.lastNameInResult.should(have(text("Last Name: " + Triss.lastName)));
+        contactPage.descriptionInResult.should(have(text("Description: " + Triss.description)));
     }
 
 }

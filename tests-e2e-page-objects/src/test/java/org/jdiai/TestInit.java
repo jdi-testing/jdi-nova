@@ -1,5 +1,6 @@
 package org.jdiai;
 
+import org.jdiai.flowmodels.ContactFlow;
 import org.jdiai.flowmodels.LoginFlow;
 import org.jdiai.site.HomePage;
 import org.jdiai.site.JDISite;
@@ -19,6 +20,7 @@ public interface TestInit {
     default HomePage homePage() { return initElements(HomePage.class); }
 
     LoginFlow loginFlow = new LoginFlow();
+    ContactFlow contactFlow = new ContactFlow();
 
     @BeforeSuite(alwaysRun = true)
     default void setUp() {

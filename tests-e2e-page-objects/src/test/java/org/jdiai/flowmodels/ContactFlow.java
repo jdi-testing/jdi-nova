@@ -14,9 +14,14 @@ public class ContactFlow {
         this.contact = contact;
         contactPage.open();
         contactPage.contactForm.fill(this.contact);
+        contactPage.contacts.weatherRain.click();
+        contactPage.summaryValue3.click();
+        contactPage.summaryValue6.click();
         contactPage.contacts.submitButton.click();
         validateLastNameInResultLog();
         validateDescriptionInResultLog();
+        validateWeatherInResultLog();
+        validateSummaryInResultLog();
     }
 
     public void validateLastNameInResultLog() {
@@ -34,8 +39,11 @@ public class ContactFlow {
         contactPage.weatherInResult.should(have(text("Vegetables: " + contact.weather)));
     }
 
-    // TODO: BUG? a little weird as it should be "description" not "Description" I think
     public void validateDescriptionInResultLog() {
         contactPage.descriptionInResult.should(have(text("Description: " + contact.description)));
+    }
+
+    public void validateSummaryInResultLog() {
+        contactPage.summaryInResult.should(have(text("Summary: " + contact.summary)));
     }
 }

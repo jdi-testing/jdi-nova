@@ -12,6 +12,7 @@ public class Contacts extends DataClass<Contacts> {
         u.religion = "Agnostic";
         u.weather = "Sun";
         u.hasPassport = true;
+        u.summary = 9;
     });
 
     @UI("#first-name") public String name;
@@ -21,4 +22,5 @@ public class Contacts extends DataClass<Contacts> {
     @UI("#religion-options") public String religion;
     @UI public String weather;
     @UI("#passport") public Boolean hasPassport;
+    @UI("#summary-block") public int summary;
 }

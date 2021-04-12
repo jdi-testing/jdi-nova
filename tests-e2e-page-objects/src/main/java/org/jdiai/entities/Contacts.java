@@ -2,6 +2,7 @@ package org.jdiai.entities;
 
 import com.epam.jdi.tools.DataClass;
 import org.jdiai.annotations.UI;
+import org.jdiai.jswraper.interfaces.SetValue;
 
 public class Contacts extends DataClass<Contacts> {
     public static Contacts Triss = new Contacts().set(u -> {
@@ -17,6 +18,8 @@ public class Contacts extends DataClass<Contacts> {
 
     @UI("#first-name") public String name;
     @UI public String lastName;
+    @UI public String passportNumber;
+    @UI public String passportSeria;
     @UI public String description;
     @UI public String gender;
     @UI("#religion-options") public String religion;

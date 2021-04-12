@@ -9,4 +9,5 @@ public class HomePage {
     @UI("#user-icon") public JS userIcon;
     @UI(".search-field input") public JS searchField;
     @UI(".icon-search.active") public JS searchIcon;
+    @UI(".login-txt") public JS loginFailedText;
 }

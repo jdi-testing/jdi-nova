@@ -1,7 +1,6 @@
 package org.jdiai.entities;
 
 import com.epam.jdi.tools.DataClass;
-import org.jdiai.annotations.UI;
 
 public class User extends DataClass<User> {
     public static User Roman = new User().set(
@@ -17,7 +16,7 @@ public class User extends DataClass<User> {
         u.position = "456765";
         u.religion = "Agnostic";
         u.hasPassport = true;
-        u.weather = "Sun";
+        u.weather = "Sun,Snow";
     });
 
     public String name, password, lastName, description, gender, religion,

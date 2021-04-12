@@ -13,6 +13,8 @@ import org.jdiai.interfaces.HasCore;
 import org.jdiai.interfaces.HasLocators;
 import org.jdiai.interfaces.HasName;
 import org.jdiai.interfaces.HasParent;
+import org.jdiai.jsbuilder.IJSBuilder;
+import org.jdiai.jsdriver.JSDriver;
 import org.jdiai.jsdriver.JSDriverUtils;
 import org.jdiai.jsdriver.JSException;
 import org.jdiai.jsproducer.Json;
@@ -38,8 +40,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.epam.jdi.tools.EnumUtils.getEnumValue;
-import static com.epam.jdi.tools.LinqUtils.copyList;
-import static com.epam.jdi.tools.LinqUtils.newList;
+import static com.epam.jdi.tools.LinqUtils.*;
 import static com.epam.jdi.tools.PrintUtils.print;
 import static com.epam.jdi.tools.ReflectionUtils.*;
 import static java.lang.Math.max;
@@ -50,8 +51,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.jdiai.jsbuilder.GetTypes.dataType;
 import static org.jdiai.jsbuilder.QueryLogger.logger;
-import static org.jdiai.jsdriver.JSDriverUtils.getByLocator;
-import static org.jdiai.jsdriver.JSDriverUtils.selector;
+import static org.jdiai.jsdriver.JSDriverUtils.*;
 import static org.jdiai.jsdriver.JSException.THROW_ASSERT;
 import static org.jdiai.jswraper.JSWrappersUtils.*;
 import static org.jdiai.page.objects.PageFactoryUtils.getLocatorFromField;
@@ -164,7 +164,7 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
         doAction("selectedIndex = [...element.options].findIndex(option => option.text === '" + value + "')");
     }
     public void doAction(String action) {
-        js.getAttribute(action);
+        js.doAction(action);
     }
     public WebElement we() {
         SearchContext ctx = driver();
@@ -206,23 +206,87 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
     }
     public void select() { click(); }
     public void select(String value) {
-        js.jsDriver().builder().setTemplate(value);
-        click();
+        if (isEmpty(locators())) {
+            return;
+        }
+        By lastLocator = last(locators());
+        if (lastLocator.toString().contains("%s")) {
+            List<By> locators = locators().size() == 1
+                ? new ArrayList<>()
+                : locators().subList(0, locators().size() - 2);
+            locators.add(fillByTemplate(lastLocator, value));
+            new JS(driver, locators).click();
+        } else {
+            find(format(SELECT_FIND_TEXT_LOCATOR, value)).click();
+        }
     }
-    public void select(String... names) {
-        for (String name : names)
-            select(name);
+    public static String SELECT_FIND_TEXT_LOCATOR = ".//*[text()='%s']";
+    public String selectFindTextLocator = SELECT_FIND_TEXT_LOCATOR;
+    protected String selectFindTextLocator() {
+        return selectFindTextLocator;
+    }
+    public JS setFindTextLocator(String locator) {
+        selectFindTextLocator = locator;
+        return this;
+    }
+    public void select(String... values) {
+        if (isEmpty(locators())) {
+            return;
+        }
+        By locator = last(locators());
+        IJSBuilder builder = getByLocator(locator).contains("%s")
+            ? getTemplateScriptForSelect(locator, values)
+            : getScriptForSelect(locator, values);
+        builder.executeQuery();
+    }
+    private IJSBuilder getTemplateScriptForSelect(By locator, String... values) {
+        IJSBuilder builder;
+        String ctx;
+        if (locators().size() == 1) {
+            builder = js.jsDriver().builder();
+            ctx = "document";
+        } else {
+            builder = new JSDriver(js.jsDriver().driver(), listCopyUntil(locators(), locators().size() - 1))
+                .buildOne();
+            ctx = "element";
+        }
+        builder.registerVariable("option");
+        builder.setElementName("option");
+        for (String value : values) {
+            By by = fillByTemplate(locator, value);
+            builder.oneToOne(ctx, by).doAction("option.click();\n");
+        }
+        return builder;
+    }
+    private IJSBuilder getScriptForSelect(By locator, String... values) {
+        if (!getByLocator(locator).endsWith("ul") && !getByLocator(locator).endsWith("select")) {
+            String script = "";
+            for (String value : values) {
+                script += "element = elements.find(e => e && e.innerText === '" + value + "');\n" +
+                        "element.click();\n";
+            }
+            return listToOne(script).js.jsDriver().builder();
+        }
+        IJSBuilder builder = js.jsDriver().buildOne();
+        builder.registerVariable("option");
+        builder.setElementName("option");
+        for (String value : values) {
+            By by = defineLocator(format(selectFindTextLocator(), value));
+            builder.oneToOne("element", by).doAction("option.click();\n");
+        }
+        return builder;
     }
     public <TEnum extends Enum<?>> void select(TEnum name) {
         select(getEnumValue(name));
     }
+    public void check(boolean condition) {
+        doAction("checked=" + condition + ";");
+    }
     public void check() {
-        if (isDeselected())
-            click();
+        check(true);
     }
     public void uncheck() {
-        if (isSelected())
-            click();
+        check(false);
     }
     public void rightClick() {
         actionsWithElement(Actions::contextClick);
@@ -254,6 +318,7 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
         set("value='" + charToString(value) + "'");
     }
     public void slide(String value) {
+        // TODO
         //Actions a = new Actions(DRIVER.get());
         //a.dragAndDropBy(DRIVER.get().findElement(By.xpath("[aria-labelledby='range-slider'][data-index='0']")),20, 0)
         //  .build().perform();
@@ -278,6 +343,9 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
     public String getAttribute(String attrName) {
         return getJSResult("getAttribute('" + attrName + "')");
     }
+    public String getProperty(String property) {
+        return getJSResult(property);
+    }
 
     public Json getJson(String valueFunc) {
         return js.getMap(valueFunc);
@@ -285,26 +353,26 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
     public String attr(String attrName) {
         return getAttribute(attrName);
     }
-    public List<String> classes() {
+    public List<String> allClasses() {
         String cl = attr("class");
         return cl.length() > 0
                 ? newList(cl.split(" "))
                 : new ArrayList<>();
     }
     public boolean hasClass(String className) {
-        return classes().contains(className);
+        return allClasses().contains(className);
     }
     public boolean hasAttribute(String attrName) {
         return isNotBlank(attr(attrName));
     }
 
-    public Json getAllAttributes() {
+    public Json allAttributes() {
         return js.getMap("return '{'+[...element.attributes].map((attr)=> `'${attr.name}'='${attr.value}'`).join()+'}'");
         //return js.getMap("return [...element.attributes].reduce((map,attr)=> { map.set('attr.name','attr.value'); return map; }, new Map())");
     }
     public String printHtml() {
         return MessageFormat.format("<{0} {1}>{2}</{0}>", getTagName().toLowerCase(),
-            print(getAllAttributes(), el -> format("%s='%s'", el.key, el.value), " "),
+            print(allAttributes(), el -> format("%s='%s'", el.key, el.value), " "),
             getJSResult("innerHTML"));
     }
     public void show() {
@@ -331,7 +399,7 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
     }
 
     public boolean isSelected() {
-        return isNotBlank(getAttribute("selected"));
+        return getProperty("checked").equals("true");
     }
     public boolean isDeselected() {
         return !isSelected();
@@ -557,6 +625,9 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
     public List<String> values() {
         return values(textType);
     }
+    public int size() {
+        return js.getAttributeList("tagName").size();
+    }
     public List<JsonObject> getObjectList(String json) {
         return js.getJsonList(json);
     }
@@ -620,7 +691,7 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
 
     public static String SUBMIT_LOCATOR = "[type=submit]";
 
-    public void setEntity(Object obj) {
+    public JS setEntity(Object obj) {
         Field[] allFields = obj.getClass().getDeclaredFields();
         List<String> mapList = new ArrayList<>();
         for (Field field : allFields) {
@@ -634,6 +705,7 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
             }
         }
         setEntity(print(mapList, ";\n") + ";\nreturn ''");
+        return this;
     }
 
     public <T> List<T> getEntityList(String objectMap, Class<?> cl) {
@@ -645,19 +717,19 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
     }
 
     public JS findFirst(String by, Function<JS, String> condition) {
-        return findFirst(defineLocator(by), condition.apply(this));
+        return findFirst(NAME_TO_LOCATOR.execute(by), condition.apply(this));
     }
     public JS findFirst(By by, Function<JS, String> condition) {
         return findFirst(by, condition.apply(this));
     }
     public JS findFirst(String by, String condition) {
-        return findFirst(defineLocator(by), condition);
+        return findFirst(NAME_TO_LOCATOR.execute(by), condition);
     }
     public JS get(int index) {
         return listToOne("element = elements[" + index + "];\n");
     }
     public JS get(String by, int index) {
-        return get(defineLocator(by), index);
+        return get(NAME_TO_LOCATOR.execute(by), index);
     }
     public JS get(By by, int index) {
         return listToOne("element = elements.filter(e => "+
@@ -685,9 +757,10 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
     }
     private JS listToOne(String script) {
         JS result = new JS(driver);
-        result.js.jsDriver().builder().addContextCode(js.jsDriver().buildList().rawQuery() + script);
-        result.js.jsDriver().elementCtx();
-        result.js.jsDriver().builder().updateFromBuilder(js.jsDriver().builder());
+        JSDriver jsDriver = result.js.jsDriver();
+        jsDriver.builder().addContextCode(js.jsDriver().buildList().rawQuery() + script);
+        jsDriver.elementCtx();
+        jsDriver.builder().updateFromBuilder(js.jsDriver().builder());
         js.jsDriver().builder().cleanup();
         return result;
     }
@@ -757,7 +830,7 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
         if (relations == null) {
             relations = new MapArray<>(element.getFullName(), direction);
         } else {
-            relations.update(element.getName(), direction);
+            relations.update(element.getFullName(), direction);
         }
         return direction;
     }
@@ -774,7 +847,7 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
     public void clearRelations() {
         relations = null;
     }
-    public MapArray<String, Direction> getRelativePosition(JS... elements) {
+    public MapArray<String, Direction> getRelativePositions(JS... elements) {
         relations = new MapArray<>();
         for (JS element : elements) {
             relations.update(element.getName(), getDirectionTo(element));
@@ -810,6 +883,9 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
         return failures;
     }
 
+    public Point getCenter() {
+        return getCenter(getClientRect());
+    }
     protected Point getCenter(ClientRect rect) {
         int x = rect.left + (rect.right - rect.left) / 2;
         int y = rect.top + (rect.bottom - rect.top) / 2;
@@ -817,7 +893,7 @@ public class JS implements WebElement, HasLocators, HasName, HasParent, HasCore 
     }
     public JS shouldBe(Condition... conditions) {
         for (Condition condition : conditions) {
-            String message = "Assert that " + condition.getName().replace("%element%", "'" + getName() + "'").replace(" %no%", "");
+            String message = "Assert that " + condition.getName(this);
             logger.info(message);
             boolean result = condition.execute(this);
             if (!result) {

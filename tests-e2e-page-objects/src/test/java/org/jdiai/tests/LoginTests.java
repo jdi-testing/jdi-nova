@@ -4,6 +4,7 @@ import org.jdiai.TestInit;
 import org.jdiai.testng.TestNGListener;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+
 import static org.jdiai.entities.LoginUser.*;
 
 @Listeners(TestNGListener.class)

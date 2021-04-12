@@ -2,13 +2,13 @@ package org.jdiai.flowmodels;
 
 import org.jdiai.entities.LoginUser;
 
-import static org.jdiai.JSTalk.loginAs;
+import static org.jdiai.JDI.loginAs;
 import static org.jdiai.asserts.Conditions.have;
 import static org.jdiai.asserts.Conditions.text;
-import static org.jdiai.entities.LoginUser.*;
+import static org.jdiai.entities.LoginUser.Roman;
 import static org.jdiai.site.JDISite.homePage;
-import static org.jdiai.site.JDISite.seleniumHomePage;
-import static org.jdiai.states.States.*;
+import static org.jdiai.states.States.atHomePage;
+import static org.jdiai.states.States.logout;
 
 public class LoginFlow {
 

@@ -2,10 +2,6 @@ package org.jdiai.entities;
 
 import com.epam.jdi.tools.DataClass;
 import org.jdiai.annotations.UI;
-import org.jdiai.enums.ActionTypes;
-import org.jdiai.jswraper.interfaces.SetValue;
-
-import static org.jdiai.enums.ActionTypes.TYPE;
 
 public class Contacts extends DataClass<Contacts> {
     public static Contacts Triss = new Contacts().set(u -> {
@@ -18,6 +14,7 @@ public class Contacts extends DataClass<Contacts> {
         u.position = "456765";
         u.religion = "Agnostic";
         u.hasPassport = true;
+        // u.weather = "Sun,Snow";
     });
 
     @UI("#first-name") public String name;
@@ -28,7 +25,7 @@ public class Contacts extends DataClass<Contacts> {
     @UI public String description;
     @UI public String gender;
     @UI public String religion;
-    @UI @SetValue(TYPE) public String weather;
+    // @UI @SetValue(TYPE) public String weather;
     @UI("#passport") public Boolean hasPassport;
 
 }

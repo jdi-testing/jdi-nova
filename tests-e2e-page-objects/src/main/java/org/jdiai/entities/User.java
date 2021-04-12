@@ -11,11 +11,19 @@ public class User extends DataClass<User> {
         u.lastName = "Merigold";
         u.description = "Triss Merigold of Maribor was a legendary Temerian sorceress of the 13th century. Called Fourteenth of the Hill by her contemporaries because she was erroneously thought to have been killed during the Battle of Sodden Hill, she passed into history as Merigold the Fearless.";
         u.gender = "Female";
+        u.passportNumber = "1354";
+        u.passportSeria = "456765";
+        u.position = "456765";
         u.religion = "Agnostic";
         u.hasPassport = true;
+        u.weather = "Sun, Snow";
+        u.odd = 3;
+        u.even = 6;
     });
 
-    public String name, password, lastName, description, gender, religion;
+    public String name, password, lastName, description, gender, religion,
+            passportNumber, passportSeria, position, weather;
     public Boolean hasPassport;
+    public int odd, even;
 
 }

@@ -16,7 +16,6 @@ import java.util.function.Supplier;
 import static com.epam.jdi.tools.PrintUtils.print;
 import static com.epam.jdi.tools.ReflectionUtils.isClass;
 import static com.epam.jdi.tools.StringUtils.LINE_BREAK;
-import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.jdiai.jsbuilder.QueryLogger.LOG_QUERY;
 import static org.jdiai.jsbuilder.QueryLogger.logger;
@@ -27,7 +26,6 @@ public class JSBuilder implements IJSBuilder {
     protected List<String> variables = new ArrayList<>();
     protected String query = "";
     protected String ctxCode = "";
-    protected String replaceValue;
     protected Supplier<JavascriptExecutor> js;
     public static JFunc1<String, String> PROCESS_RESULT =
         result -> result.length() > 200  ? result.substring(0, 195) + "..." : result;
@@ -46,7 +44,14 @@ public class JSBuilder implements IJSBuilder {
             : new BuilderActions();
         this.builderActions.setBuilder(this);
     }
-
+    protected String elementName = "element";
+    public IJSBuilder setElementName(String elementName) {
+        this.elementName = elementName;
+        return this;
+    }
+    public String getElementName() {
+        return elementName;
+    }
     public IJSBuilder updateActions(IBuilderActions builderActions) {
         this.builderActions = builderActions;
         this.builderActions.setBuilder(this);
@@ -58,10 +63,6 @@ public class JSBuilder implements IJSBuilder {
     }
     public IJSBuilder logQuery(int LogLevel) {
         this.logQuery = LogLevel;
-        return this;
-    }
-    public IJSBuilder setTemplate(String replaceTo) {
-        this.replaceValue = replaceTo;
         return this;
     }
     public boolean logScript() {
@@ -126,6 +127,9 @@ public class JSBuilder implements IJSBuilder {
     public IJSBuilder listToList(By locator) {
         return addJSCode(builderActions.listToList(locator));
     }
+    public IJSBuilder doAction(String collectResult) {
+        return addJSCode(builderActions.doAction(collectResult));
+    }
     public IJSBuilder getResult(String collectResult) {
         return addJSCode(builderActions.getResult(getCollector(collectResult)));
     }
@@ -183,11 +187,10 @@ public class JSBuilder implements IJSBuilder {
     }
     public String getQuery() {
         String script = getScript().replace("\nreturn ''", "");
-        if (!script.contains("%s"))
+        if (!script.contains("%s")) {
             return script;
-        if (replaceValue != null)
-            return format(script, replaceValue);
-        throw new JSException("Failed to execute js script for template without replaceValue. Use setTemplate(...) method for builder to set replaceValue");
+        }
+        throw new JSException("Failed to execute js script for template locator. Please replace %s before usage");
     }
     protected String getScript() {
         if (variables.size() == 0 && useFunctions.size() == 0) {
@@ -203,7 +206,6 @@ public class JSBuilder implements IJSBuilder {
         useFunctions.clear();
         query = "";
         variables = new ArrayList<>();
-        replaceValue = null;
         ctxCode = "";
     }
     public void updateFromBuilder(IJSBuilder builder) {
@@ -228,7 +230,6 @@ public class JSBuilder implements IJSBuilder {
         result.js = js;
         result.useFunctions = useFunctions;
         result.logQuery = logQuery;
-        result.replaceValue = replaceValue;
         result.variables = variables;
         return result;
     }

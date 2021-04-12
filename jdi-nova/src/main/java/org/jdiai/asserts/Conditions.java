@@ -1,9 +1,20 @@
 package org.jdiai.asserts;
 
 import org.jdiai.JS;
+import org.jdiai.jsdriver.JSException;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.epam.jdi.tools.PrintUtils.print;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.jdiai.jsbuilder.QueryLogger.logger;
+import static org.jdiai.visual.Directions.*;
 
 public abstract class Conditions {
     public static Condition visible = condition("%element% is %not% visible",  el -> {
@@ -25,6 +36,47 @@ public abstract class Conditions {
     public static Condition disappear = not(appear);
 
     public static Condition readonly = attribute("readonly");
+
+    public static Condition onTopOf(JS element) {
+        return condition("%element% is %not% on the Top of '" + element.getFullName() + "'",
+            el -> HIGHER.execute(element.getDirectionTo(el)));
+    }
+    public static Condition below(JS element) {
+        return condition("%element% is %not% Below '" + element.getFullName() + "'",
+            el -> LOWER.execute(element.getDirectionTo(el)));
+    }
+    public static Condition onLeftOf(JS element) {
+        return condition("%element% is %not% on the Left of '" + element.getFullName() + "'",
+            el -> LEFT.execute(element.getDirectionTo(el)));
+    }
+    public static Condition onRightOf(JS element) {
+        return condition("%element% is %not% on the Right of '" + element.getFullName() + "'",
+            el -> RIGHT.execute(element.getDirectionTo(el)));
+    }
+    public static Condition onTopLeftOf(JS element) {
+        return condition("%element% is %not% on the Top-Left of '" + element.getFullName() + "'",
+            el -> TOP_LEFT.execute(element.getDirectionTo(el)));
+    }
+    public static Condition onTopRightOf(JS element) {
+        return condition("%element% is %not% on the Top-Right of '" + element.getFullName() + "'",
+            el -> TOP_RIGHT.execute(element.getDirectionTo(el)));
+    }
+    public static Condition onBottomLeftOf(JS element) {
+        return condition("%element% is %not% on the Bottom-Left of '" + element.getFullName() + "'",
+            el -> BOTTOM_LEFT.execute(element.getDirectionTo(el)));
+    }
+    public static Condition onBottomRightOf(JS element) {
+        return condition("%element% is %not% on the Bottom-Right of '" + element.getFullName() + "'",
+            el -> BOTTOM_RIGHT.execute(element.getDirectionTo(el)));
+    }
+    public static Condition onTheSameLine(JS element) {
+        return condition("%element% is %not% on the same line '" + element.getFullName() + "'",
+            el -> SAME_HORIZONTAL.execute(element.getDirectionTo(el)));
+    }
+    public static Condition onTheSameVertical(JS element) {
+        return condition("%element% is %not% on the same vertical line '" + element.getFullName() + "'",
+            el -> SAME_VERTICAL.execute(element.getDirectionTo(el)));
+    }
 
     public static Condition attribute(String attributeName) {
         return condition("%element% has %no% '" + attributeName + "' attribute",
@@ -106,6 +158,32 @@ public abstract class Conditions {
             el -> el.getText().matches(regex));
     }
 
+    public static Condition be(Object entity) {
+        return condition("%element% is %no% '" + entity.toString() + "'",
+            el -> el.getEntity(entity.getClass()).equals(entity));
+    }
+    public static <T> Condition be(List<T> entities) {
+        return haveCondition(true, true, entities);
+    }
+    public static <T> Condition be(T... entities) {
+        return haveCondition(true, true, asList(entities));
+    }
+    public static <T> Condition have(List<T> entities) {
+        return haveCondition(false, false, entities);
+    }
+    public static <T> Condition have(T... entities) {
+        return haveCondition(false, false, asList(entities));
+    }
+    public static <T> Condition haveAll(List<T> entities) {
+        return haveCondition(true, false, entities);
+    }
+    public static <T> Condition haveAll(T... entities) {
+        return haveCondition(true, false, asList(entities));
+    }
+    public static Condition size(int size) {
+        return condition("%element% have size '" + size + "'",
+                el -> el.size() == size);
+    }
     public static Condition text(String text) {
         return condition("%element% has %no% text='" + text + "'",
             el -> el.getText().equals(text));
@@ -114,7 +192,6 @@ public abstract class Conditions {
         return condition("%element% contains %no% text='" + text + "'",
             el -> el.getText().contains(text));
     }
-
     public static Condition cssClass(String cssClass) {
         return condition("%element% has %no% css class '" + cssClass + "'",
             el -> isNotBlank(el.cssStyle(cssClass)));
@@ -166,5 +243,35 @@ public abstract class Conditions {
     }
     public static Condition waitFor(Condition condition) {
         return condition;
+    }
+
+    private static <T> Condition haveCondition(boolean checkSize, boolean sameOrder, List<T> entities) {
+        if (isEmpty(entities)) {
+            throw new JSException("Should have validation require at least one element");
+        }
+        return condition("%element% have %no% [" + print(singletonList(entities), Object::toString) + "]",
+                el -> compareTwoLists(el, checkSize, sameOrder, entities));
+    }
+    private static <T> boolean compareTwoLists(JS el, boolean checkSize, boolean sameOrder, List<T> entities) {
+        List<T> list = el.getEntityList((Class<T>) entities.get(0).getClass());
+        if (checkSize && list.size() != entities.size()) {
+            logger.error("Expected size: %s, but found: %s", entities.size(), list.size());
+            return false;
+        }
+        List<T> listOfFails = new ArrayList<>();
+        int i = 0;
+        for (T entity : entities) {
+            if (sameOrder && !entity.equals(list.get(i++)) || !sameOrder && !list.contains(entity)) {
+                listOfFails.add(entity);
+            }
+        }
+        if (isNotEmpty(listOfFails)) {
+            logger.error("Failed to find following entities: \n%s\nActual values:\n%s",
+                print(listOfFails, Object::toString, "\n"),
+                print(list, Object::toString, "\n")
+            );
+            return false;
+        }
+        return true;
     }
 }

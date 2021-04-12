@@ -13,6 +13,5 @@ public class ContactPage extends WebPage {
 
     @UI("#contact-form") public ContactForm contacts;
 
-    @UI("section.horizontal-group:nth-child(1) > p:nth-child(2) > label:nth-child(2)") public JS summaryValue3;
-    @UI("section.horizontal-group:nth-child(2) > p:nth-child(3) > label:nth-child(2)") public JS summaryValue6;
+    @UI("#summary-block label") public JS summary;
 }

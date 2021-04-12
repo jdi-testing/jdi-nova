@@ -1,30 +1,25 @@
 package org.jdiai.flowmodels;
 
-import org.jdiai.entities.Contacts;
+import org.jdiai.entities.User;
 
 import static org.jdiai.asserts.Conditions.have;
 import static org.jdiai.asserts.Conditions.text;
 import static org.jdiai.site.JDISite.contactPage;
 
 public class ContactFlow {
-
-    Contacts contact = new Contacts();
-
-    public void successfullyCreateContact(Contacts contact) {
-        this.contact = contact;
+    public void successfullyCreateContact(User contact) {
         contactPage.open();
-        contactPage.contactForm.fill(this.contact);
-        contactPage.contacts.weatherRain.click();
-        contactPage.summaryValue3.click();
-        contactPage.summaryValue6.click();
+        contactPage.contacts.fillContacts(contact);
         contactPage.contacts.submitButton.click();
-        validateLastNameInResultLog();
-        validateDescriptionInResultLog();
-        validateWeatherInResultLog();
-        validateSummaryInResultLog();
+        contactPage.summary.select(contact.odd+"", contact.even+"");
+        contactPage.contacts.calculateButton.click();
+        validateLastNameInResultLog(contact);
+        validateDescriptionInResultLog(contact);
+        validateWeatherInResultLog(contact);
+        validateSummaryInResultLog(contact);
     }
 
-    public void validateLastNameInResultLog() {
+    public void validateLastNameInResultLog(User contact) {
         contactPage.lastNameInResult.should(have(text("Last Name: " + contact.lastName)));
     }
 
@@ -35,15 +30,15 @@ public class ContactFlow {
 
     // TODO: implement weather selection for contact
     // TODO: BUG: It is shown as Vegetables although it should be Weather
-    public void validateWeatherInResultLog() {
+    public void validateWeatherInResultLog(User contact) {
         contactPage.weatherInResult.should(have(text("Vegetables: " + contact.weather)));
     }
 
-    public void validateDescriptionInResultLog() {
+    public void validateDescriptionInResultLog(User contact) {
         contactPage.descriptionInResult.should(have(text("Description: " + contact.description)));
     }
 
-    public void validateSummaryInResultLog() {
-        contactPage.summaryInResult.should(have(text("Summary: " + contact.summary)));
+    public void validateSummaryInResultLog(User contact) {
+        contactPage.summaryInResult.should(have(text("Summary: " + (contact.odd + contact.even))));
     }
 }

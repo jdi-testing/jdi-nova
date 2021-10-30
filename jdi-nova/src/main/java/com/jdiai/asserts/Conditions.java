@@ -232,7 +232,7 @@ public abstract class Conditions {
 
     public static Condition be(Object entity) {
         return condition("%element% is %no% '" + entity.toString() + "'",
-            el -> el.getEntity(entity.getClass()).equals(entity));
+            el -> entity.equals(el.getEntity(entity.getClass())));
     }
     public static <T> Condition beOrdered(List<T> entities) {
         return haveCondition(true, true, entities);

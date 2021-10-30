@@ -22,6 +22,7 @@ import com.jdiai.tools.Safe;
 import com.jdiai.tools.StringUtils;
 import com.jdiai.tools.func.JAction2;
 import com.jdiai.tools.func.JAction3;
+import com.jdiai.tools.func.JFunc1;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -67,6 +68,7 @@ import static com.jdiai.tools.ReflectionUtils.isInterface;
 import static com.jdiai.tools.StringUtils.format;
 import static java.lang.Integer.parseInt;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class JDI {
@@ -281,6 +283,7 @@ public class JDI {
     public static void logAll() {
         logJSRequests(ALL);
     }
+
     public static void logJSRequests(int logQueriesLevel) {
         LOG_QUERY.set(logQueriesLevel);
     }
@@ -292,6 +295,8 @@ public class JDI {
             savedLogLevel.set(null);
         }
     }
+
+    public static Function<JSLight, String> NAME_FUNC = js -> isNotBlank(js.name) ? js.name : js.printLocators();
 
     public static WebDriver driver() {
         return DRIVER.get();

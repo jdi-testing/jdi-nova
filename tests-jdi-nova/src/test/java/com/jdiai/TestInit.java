@@ -12,9 +12,9 @@ public interface TestInit {
     default void setUp() {
         killDrivers();
         DRIVER_OPTIONS.chrome = cap -> cap.addArguments("--headless");
-        logAll();
+        // logAll();
         domain = "https://jdi-testing.github.io/jdi-light";
-        logJDIActions();
+        // logJDIActions();
         // addListener(new JDIAllureListener());
     }
 

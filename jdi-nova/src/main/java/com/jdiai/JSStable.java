@@ -18,6 +18,7 @@ import static com.jdiai.JDI.*;
 import static com.jdiai.asserts.Conditions.visible;
 import static com.jdiai.jsbuilder.JSBuilder.lastScriptExecution;
 import static com.jdiai.listeners.JDIEvents.*;
+import static com.jdiai.tools.LinqUtils.last;
 import static com.jdiai.tools.PrintUtils.print;
 import static com.jdiai.tools.StringUtils.format;
 import static com.jdiai.tools.Timer.sleep;
@@ -461,6 +462,24 @@ public class JSStable extends JSLight {
     @Override
     public void setEntity(String objectMap) {
         stableAction("setEntity(objectMap)", null, () -> super.setEntity(objectMap));
+    }
+
+    @Override
+    public List<String> allValues(String getTextType) {
+        return stableFunction("allValues()",
+        "Get '{name}' all values", () -> super.allValues(getTextType));
+    }
+
+    @Override
+    public List<String> allValues() {
+        return stableFunction("allValues()",
+        "Get '{name}' all values", () -> super.allValues(textType()));
+    }
+
+    @Override
+    public int size() {
+        return stableFunction("size()",
+        "Get '{name}' amount of elements", super::size);
     }
 
 }

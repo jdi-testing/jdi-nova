@@ -59,9 +59,9 @@ public class JSLight implements JS {
     protected JSEngine engine;
     protected Supplier<WebDriver> driver;
     protected Safe<Actions> actions;
-    protected String name = "";
-    protected String varName = "";
-    protected Object parent = null;
+    public String name = "";
+    public String varName = "";
+    public Object parent = null;
     protected JSImages imagesData;
     public int renderTimeout = 5000;
     protected String objectMap;
@@ -362,7 +362,7 @@ public class JSLight implements JS {
     }
 
     public String getText() {
-        return getText(textType());
+        return getJSResult(textType());
     }
 
     public String getText(String textType) {
@@ -619,6 +619,7 @@ public class JSLight implements JS {
             ? GET_SIZE_FROM_TEMPLATE.apply(lastLocator)
             : useFilter(() -> engine().getSize());
     }
+
     public Function<By, Integer> GET_SIZE_FROM_TEMPLATE = this::getTemplateSize;
 
     private int getTemplateSize(By lastLocator) {
@@ -1233,9 +1234,7 @@ public class JSLight implements JS {
     }
 
     public String getName() {
-        return isNotBlank(name)
-                ? name
-                : printLocators();
+        return NAME_FUNC.apply(this);
     }
 
     protected String printLocators() {

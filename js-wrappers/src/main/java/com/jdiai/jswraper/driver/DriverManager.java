@@ -37,7 +37,7 @@ public class DriverManager {
     }
 
     public static WebDriver getDriver(DriverTypes driverType) {
-        if(driverType == null) {
+        if (driverType == null) {
             throw new JDINovaException("Driver type can't be null");
         }
         switch (driverType) {

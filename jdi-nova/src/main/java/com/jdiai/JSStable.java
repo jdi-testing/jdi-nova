@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.jdiai.jsbuilder.ScriptResult;
 import com.jdiai.jsdriver.JDINovaException;
 import com.jdiai.jsproducer.Json;
+import com.jdiai.tools.PrintUtils;
 import com.jdiai.tools.Timer;
 import com.jdiai.tools.func.JAction;
 import com.jdiai.visual.Direction;
@@ -21,6 +22,7 @@ import static com.jdiai.listeners.JDIEvents.*;
 import static com.jdiai.tools.PrintUtils.print;
 import static com.jdiai.tools.StringUtils.format;
 import static com.jdiai.tools.Timer.sleep;
+import static java.util.Arrays.asList;
 import static org.openqa.selenium.Keys.BACK_SPACE;
 
 public class JSStable extends JSLight {
@@ -261,8 +263,10 @@ public class JSStable extends JSLight {
         if (value == null) {
             return this;
         }
-        stableFilterAction("input(" + value + ")",
-        "Input '" + value + " to '{name}'",
+        String text = charToString(value);
+        // String text = PrintUtils.print(asList(value), Object::toString);
+        stableFilterAction("input(" + text + ")",
+        "Input '" + text + " to '{name}'",
             () -> {
                 we().clear();
                 fixedSendKeys(value);
@@ -274,7 +278,8 @@ public class JSStable extends JSLight {
         if (value == null) {
             return ;
         }
-        stableFilterAction("input(" + value + ")", "Input '" + value + " to '{name}'",
+        String text = charToString(value);
+        stableFilterAction("input(" + text + ")", "Input '" + text + " to '{name}'",
             () -> fixedSendKeys(value));
     }
     private void fixedSendKeys(CharSequence... value) {

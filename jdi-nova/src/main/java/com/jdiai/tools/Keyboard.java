@@ -36,13 +36,13 @@ public class Keyboard {
 
     public static int waitBeforePasteTextMs = 500;
 
-    public static void pasteText(CharSequence text) {
+    public static void pasteText(String text) {
         pasteText(text, waitBeforePasteTextMs);
     }
 
-    public static void pasteText(CharSequence text, long timeToWaitMSec) {
+    public static void pasteText(String text, long timeToWaitMSec) {
         try {
-            StringSelection stringSelection = new StringSelection(text.toString());
+            StringSelection stringSelection = new StringSelection(text);
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(stringSelection, (clipboard1, contents) -> { });
             Timer.sleep(timeToWaitMSec);

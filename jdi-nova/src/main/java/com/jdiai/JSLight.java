@@ -238,7 +238,7 @@ public class JSLight implements JS {
     }
 
     public void clear() {
-        engine().doAction("setAttribute('value', '');\nelement.value='';");
+        setProperty("value", "");
     }
 
     public String getTagName() {
@@ -250,11 +250,23 @@ public class JSLight implements JS {
     }
 
     public String getAttribute(String attrName) {
-        return getJSResult("getAttribute('" + attrName + "')");
+        return attributesInSeleniumWay
+            ? engine().getProperty(attrName)
+            : engine().getAttribute(attrName);
     }
 
     public String getProperty(String property) {
-        return getJSResult(property);
+        return attributesInSeleniumWay
+            ? engine().getAttribute(property)
+            : engine().getProperty(property);
+    }
+
+    public void setAttribute(String attrName, String value) {
+        engine().doAction("setAttribute('" + attrName + "', '" + value + "');");
+    }
+
+    public void setProperty(String property, String value) {
+        engine().doAction("element." + property + " = '" + value + "';");
     }
 
     public Json getJson(String valueFunc) {
@@ -265,12 +277,28 @@ public class JSLight implements JS {
         return getAttribute(attrName);
     }
 
+    public String prop(String attrName) {
+        return getProperty(attrName);
+    }
+
     public List<String> getAttributesAsList(String attr) {
-        return engine().getAttributeList(attr);
+        return attributesInSeleniumWay
+            ? engine().getPropertyList(attr)
+            : engine().getAttributeList(attr);
+    }
+
+    public List<String> getPropertiesAsList(String property) {
+        return attributesInSeleniumWay
+            ? engine().getAttributeList(property)
+            : engine().getPropertyList(property);
     }
 
     public List<String> attrList(String attr) {
         return getAttributesAsList(attr);
+    }
+
+    public List<String> propsList(String property) {
+        return getPropertiesAsList(property);
     }
 
     public List<Json> getAttributesAsList(String... attributes) {
@@ -293,7 +321,15 @@ public class JSLight implements JS {
     }
 
     public boolean hasAttribute(String attrName) {
-        return getJSResult("hasAttribute('" + attrName + "')").equals("true");
+        return JDI.attributesInSeleniumWay
+            ? engine().hasProperty(attrName)
+            : engine().hasAttribute(attrName);
+    }
+
+    public boolean hasProperty(String property) {
+        return JDI.attributesInSeleniumWay
+            ? engine().hasAttribute(property)
+            : engine().hasProperty(property);
     }
 
     public Json allAttributes() {
@@ -327,20 +363,21 @@ public class JSLight implements JS {
         highlight("red");
     }
 
-    public String cssStyle(String style) {
+    public String style(String style) {
         return engine().getStyle(style);
     }
 
-    public Json cssStyles(String... styles) {
+    public Json styles(String... styles) {
         return engine().getStyles(styles);
     }
 
-    public Json allCssStyles() {
+    public Json allStyles() {
         return engine().getAllStyles();
     }
 
     public boolean isSelected() {
-        return getProperty("checked").equals("true") || getProperty("selected").equals("true");
+        return getAttribute("checked").equals("true")
+            || getAttribute("selected").equals("true");
     }
 
     public boolean isDeselected() {
@@ -606,7 +643,7 @@ public class JSLight implements JS {
     }
 
     public List<String> allValues(String getTextType) {
-        return engine().getAttributeList(getTextType);
+        return getAttributesAsList(getTextType);
     }
 
     public List<String> allValues() {
@@ -1141,7 +1178,7 @@ public class JSLight implements JS {
      * @return value
      */
     public String getJSResult(String action) {
-        return engine().getAttribute(action);
+        return engine().getProperty(action);
     }
 
     public JS setOption(String option) {

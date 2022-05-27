@@ -7,7 +7,6 @@ import com.jdiai.interfaces.HasCore;
 import com.jdiai.jsbuilder.ConsoleLogger;
 import com.jdiai.jsbuilder.IJSBuilder;
 import com.jdiai.jsbuilder.JSBuilder;
-import com.jdiai.jsbuilder.Slf4JLogger;
 import com.jdiai.jsbuilder.jsfunctions.*;
 import com.jdiai.jsdriver.JDINovaException;
 import com.jdiai.jswraper.JSBaseEngine;
@@ -17,16 +16,13 @@ import com.jdiai.jswraper.driver.DriverTypes;
 import com.jdiai.jswraper.driver.JDIDriver;
 import com.jdiai.listeners.JDIEventsListener;
 import com.jdiai.listeners.JDILogListener;
+import com.jdiai.logger.Slf4JLogger;
 import com.jdiai.tools.ILogger;
 import com.jdiai.tools.Safe;
 import com.jdiai.tools.StringUtils;
 import com.jdiai.tools.func.JAction2;
 import com.jdiai.tools.func.JAction3;
-import com.jdiai.tools.func.JFunc1;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
 
 import java.io.File;
@@ -38,8 +34,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static com.jdiai.LoggerTypes.CONSOLE;
-import static com.jdiai.LoggerTypes.SLF4J;
 import static com.jdiai.asserts.Conditions.above;
 import static com.jdiai.asserts.Conditions.onLeftOf;
 import static com.jdiai.asserts.ShouldUtils.SOFT_ASSERTION_MODE;
@@ -54,6 +48,8 @@ import static com.jdiai.jswraper.driver.DriverManager.useDriver;
 import static com.jdiai.jswraper.driver.JDIDriver.BROWSER_SIZE;
 import static com.jdiai.jswraper.driver.JDIDriver.DRIVER_OPTIONS;
 import static com.jdiai.listeners.JDIEvents.*;
+import static com.jdiai.logger.LoggerTypes.CONSOLE;
+import static com.jdiai.logger.LoggerTypes.SLF4J;
 import static com.jdiai.page.objects.PageFactory.initSite;
 import static com.jdiai.page.objects.PageFactoryUtils.getLocatorFromField;
 import static com.jdiai.tools.Alerts.acceptAlert;
@@ -280,12 +276,16 @@ public class JDI {
         }
     }
 
+    public static void logNone() {
+        logJSRequests(OFF);
+    }
+
     public static void logAll() {
         logJSRequests(ALL);
     }
 
-    public static void logJSRequests(int logQueriesLevel) {
-        LOG_QUERY.set(logQueriesLevel);
+    public static void logJSRequests(int logQueryLevel) {
+        LOG_QUERY.set(logQueryLevel);
     }
 
     public static void loggerOn() {
@@ -375,6 +375,7 @@ public class JDI {
                 setLogger(new ConsoleLogger(getLoggerName(CONSOLE)));
                 break;
         }
+        logJDIActions();
         try {
             String[] split = browserSize.split("x");
             BROWSER_SIZE = new Dimension(parseInt(split[0]), parseInt(split[1]));
@@ -383,6 +384,8 @@ public class JDI {
         }
         initialized = true;
     }
+
+    public static boolean attributesInSeleniumWay = true;
 
     private static String getLoggerName(String name) {
         return format("%s(%s)", LOGGER_NAME, name);
@@ -412,11 +415,20 @@ public class JDI {
         setBrowserSize(width, height);
     }
 
+    public static void openSiteHeadless(String url) {
+        domain = url;
+        openSiteHeadless();
+    }
     public static void openSiteHeadless() {
         DRIVER_OPTIONS.chrome = cap -> cap.addArguments("--headless");
         openSite();
     }
     public static void openSiteHeadless(int width, int height) {
+        openSiteHeadless();
+        setBrowserSize(width, height);
+    }
+    public static void openSiteHeadless(String url, int width, int height) {
+        domain = url;
         openSiteHeadless();
         setBrowserSize(width, height);
     }
@@ -514,6 +526,10 @@ public class JDI {
         return amount < 1 || any(elements, line -> line.length != amount);
     }
 
+    public static void openPageWith(String url, Credentials user) {
+        ((HasAuthentication) driver()).register(() -> user);
+        openPage(url);
+    }
     public static void openPage(String url) {
         init();
         String fullUrl = isNotEmpty(domain) && !url.contains("//")
@@ -534,6 +550,10 @@ public class JDI {
         } finally {
             fireEvent(AFTER_ACTION_EVENT, openPageAction, openPageStep, null, null, 0L, 0L);
         }
+    }
+
+    public static JS $() {
+        return initJSFunc.apply(newList());
     }
 
     public static JS $(By locator) {
@@ -557,7 +577,7 @@ public class JDI {
     }
 
     public static void loginAs(Object user) {
-        initJSFunc.apply(null).loginAs(user);
+        initJSFunc.apply(newList()).loginAs(user);
     }
 
     public static void submitForm(String formLocator, Object user) {

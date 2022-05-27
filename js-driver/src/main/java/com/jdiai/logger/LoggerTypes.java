@@ -1,4 +1,4 @@
-package com.jdiai;
+package com.jdiai.logger;
 
 public class LoggerTypes {
     public static final String CONSOLE = "console";

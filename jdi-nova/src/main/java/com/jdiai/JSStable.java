@@ -18,7 +18,6 @@ import static com.jdiai.JDI.*;
 import static com.jdiai.asserts.Conditions.visible;
 import static com.jdiai.jsbuilder.JSBuilder.lastScriptExecution;
 import static com.jdiai.listeners.JDIEvents.*;
-import static com.jdiai.tools.LinqUtils.last;
 import static com.jdiai.tools.PrintUtils.print;
 import static com.jdiai.tools.StringUtils.format;
 import static com.jdiai.tools.Timer.sleep;
@@ -349,18 +348,18 @@ public class JSStable extends JSLight {
     }
 
     @Override
-    public String cssStyle(String style) {
-        return stableFunction("cssStyle(" + style + ")", null, () -> super.cssStyle(style));
+    public String style(String style) {
+        return stableFunction("cssStyle(" + style + ")", null, () -> super.style(style));
     }
 
     @Override
-    public Json cssStyles(String... styles) {
-        return stableFunction("cssStyles(" + print(styles) + ")", null, () -> super.cssStyles(styles));
+    public Json styles(String... styles) {
+        return stableFunction("cssStyles(" + print(styles) + ")", null, () -> super.styles(styles));
     }
 
     @Override
-    public Json allCssStyles() {
-        return stableFunction("allCssStyles()", null, super::allCssStyles);
+    public Json allStyles() {
+        return stableFunction("allCssStyles()", null, super::allStyles);
     }
 
     @Override

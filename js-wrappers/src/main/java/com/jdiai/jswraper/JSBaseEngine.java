@@ -81,7 +81,7 @@ public class JSBaseEngine extends JSElement implements JSEngine {
     }
 
     public <T> T getEntity(List<String> attributes) {
-        return (T) jsDriver.getOne(attributesToJson(attributes)).asObject(entity);
+        return (T) jsDriver.getOne(propertiesToJson(attributes)).asObject(entity);
     }
 
     public <T> T getEntityFromAttr(String... attributes) {
@@ -97,7 +97,7 @@ public class JSBaseEngine extends JSElement implements JSEngine {
     }
 
     public <T> List<T> getEntityList(List<String> attributes) {
-        return map(jsDriver.getList(attributesToJson(attributes)).asObject(entity), el -> (T) el);
+        return map(jsDriver.getList(propertiesToJson(attributes)).asObject(entity), el -> (T) el);
     }
 
     public <T> List<T> getEntityListFromAttr(String... attributes) {

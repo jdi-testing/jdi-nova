@@ -155,16 +155,19 @@ public class JSWithFiltersTests implements TestInit {
         assertEquals(headers.get(0).get("class").getAsString(), "");
         assertEquals(headers.get(0).get("tag").getAsString(), "TH");
     }
+
     private JSEngine userName() {
         JSEngine userName = $w("#user-name");
         userName.setupEntity(TextHtml.class);
         return userName;
     }
+
     private JSEngine userNameInfo() {
         JSEngine userName = $w("#user-name");
         userName.setupEntity(TextInfo.class);
         return userName;
     }
+
     @Test
     public void smartFromJsonTest() {;
         TextInfo jsObject = userNameInfo().getEntity(
@@ -185,6 +188,7 @@ public class JSWithFiltersTests implements TestInit {
         assertEquals(jsObject.textContent, "Roman Iovlev");
         assertEquals(jsObject.innerHTML, "Roman Iovlev");
     }
+
     private JSEngine header() {
         JSEngine userName = $wf("#furniture-double-hidden th");
         userName.setupEntity(Header.class);
@@ -226,21 +230,21 @@ public class JSWithFiltersTests implements TestInit {
     }
     @Test
     public void attributeTest() {
-        assertEquals($w(TextInfo.class, "#user-icon").getAttribute("tagName"), "IMG");
+        assertEquals($w(TextInfo.class, "#user-icon").getProperty("tagName"), "IMG");
 
         JSElement userName = $w(TextInfo.class, "#user-name");
-        assertEquals(userName.getAttribute("innerText"), "Roman Iovlev");
-        assertEquals(userName.getAttribute("textContent"), "Roman Iovlev");
-        assertEquals(userName.getAttribute("innerHTML"), "Roman Iovlev");
+        assertEquals(userName.getProperty("innerText"), "Roman Iovlev");
+        assertEquals(userName.getProperty("textContent"), "Roman Iovlev");
+        assertEquals(userName.getProperty("innerHTML"), "Roman Iovlev");
     }
     @Test
     public void attributeLocatorListTest() {
-        assertEquals($w(TextInfo.class, withParent("#user-icon")).getAttribute("tagName"), "IMG");
+        assertEquals($w(TextInfo.class, withParent("#user-icon")).getProperty("tagName"), "IMG");
 
         JSElement userName = $w(TextInfo.class, withParent("#user-name"));
-        assertEquals(userName.getAttribute("innerText"), "Roman Iovlev");
-        assertEquals(userName.getAttribute("textContent"), "Roman Iovlev");
-        assertEquals(userName.getAttribute("innerHTML"), "Roman Iovlev");
+        assertEquals(userName.getProperty("innerText"), "Roman Iovlev");
+        assertEquals(userName.getProperty("textContent"), "Roman Iovlev");
+        assertEquals(userName.getProperty("innerHTML"), "Roman Iovlev");
     }
     @Test
     public void valueTest() {
@@ -259,27 +263,27 @@ public class JSWithFiltersTests implements TestInit {
     @Test
     public void attributeListTest() {
         loggedInAt(SIMPLE_PAGE);
-        List<String> headers = $w(TextInfo.class, "#products th").getAttributeList("innerText");
+        List<String> headers = $w(TextInfo.class, "#products th").getPropertyList("innerText");
         assertEquals(headers.size(), 4);
         assertEquals(headers.toString(), "[Name, Type, Cost, Weight]");
     }
     @Test
     public void attributesListLocatorListTest() {
         loggedInAt(SIMPLE_PAGE);
-        List<String> headers = $w(TextInfo.class, "#products", "th").getAttributeList("innerText");
+        List<String> headers = $w(TextInfo.class, "#products", "th").getPropertyList("innerText");
         assertEquals(headers.size(), 4);
         assertEquals(headers.toString(), "[Name, Type, Cost, Weight]");
     }
     @Test
     public void attributesTest() {
-        Json attributes = $w(TextInfo.class, "#user-icon").getAttributes("id", "src", "tagName");
+        Json attributes = $w(TextInfo.class, "#user-icon").getProperties("id", "src", "tagName");
         assertEquals(attributes.get("id"), "user-icon");
         assertEquals(attributes.get("src"), DOMAIN + "/images/icons/user-icon.jpg");
         assertEquals(attributes.get("tagName"), "IMG");
     }
     @Test
     public void attributesLocatorListTest() {
-        Json attributes = $w(TextInfo.class, withParent("#user-icon")).getAttributes("id", "src", "tagName");
+        Json attributes = $w(TextInfo.class, withParent("#user-icon")).getProperties("id", "src", "tagName");
         assertEquals(attributes.get("id"), "user-icon");
         assertEquals(attributes.get("src"), DOMAIN + "/images/icons/user-icon.jpg");
         assertEquals(attributes.get("tagName"), "IMG");
@@ -287,7 +291,7 @@ public class JSWithFiltersTests implements TestInit {
     @Test
     public void multiAttributesTest() {
         loggedInAt(SIMPLE_PAGE);
-        List<Json> headers = $wf(TextInfo.class, "#furniture-double-hidden th").getMultiAttributes("innerText", "className ", "tagName");
+        List<Json> headers = $wf(TextInfo.class, "#furniture-double-hidden th").getMultiProperties("innerText", "className ", "tagName");
         assertEquals(headers.size(), 4);
 
         assertEquals(headers.get(0).get("innerText"), "Name");
@@ -297,7 +301,7 @@ public class JSWithFiltersTests implements TestInit {
     @Test
     public void multiAttributesLocatorListTest() {
         loggedInAt(SIMPLE_PAGE);
-        List<Json> headers = $wf(TextInfo.class, "#furniture-double-hidden", "th").getMultiAttributes("innerText", "className", "tagName");
+        List<Json> headers = $wf(TextInfo.class, "#furniture-double-hidden", "th").getMultiProperties("innerText", "className", "tagName");
         assertEquals(headers.size(), 4);
 
         assertEquals(headers.get(0).get("innerText"), "Name");

@@ -16,7 +16,7 @@ public class JDINovaTests {
     public User DefaultUser = new User();
     @BeforeMethod
     public void before() {
-        logAll();
+        // logAll();
     }
 
     @Test(enabled = false)

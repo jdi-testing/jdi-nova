@@ -10,6 +10,7 @@ public interface TestInit {
     default void setUp() {
         killDrivers();
         JDI.openSiteHeadless("https://jdi-testing.github.io/jdi-light");
+        // JDI.openSite("https://jdi-testing.github.io/jdi-light");
         // logAll();
         // logJDIActions();
         // addListener(new JDIAllureListener());

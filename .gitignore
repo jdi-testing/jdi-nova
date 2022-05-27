@@ -8,3 +8,4 @@ target/
 *.log
 .DS_Store
 build/
+.allure/

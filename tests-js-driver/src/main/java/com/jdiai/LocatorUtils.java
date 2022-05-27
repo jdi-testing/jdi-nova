@@ -3,7 +3,7 @@ package com.jdiai;
 import com.jdiai.locators.ByFrame;
 import org.openqa.selenium.By;
 
-import static org.apache.logging.log4j.util.Strings.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class LocatorUtils {
     public static By defineLocator(String locator) {

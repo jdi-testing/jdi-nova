@@ -66,7 +66,19 @@ public class JSElement {
 
     // region Attributes
     public String getAttribute(String attribute) {
-        return getValue("element." + attribute);
+        return getValue("element.getAttribute('" + attribute + "')");
+    }
+
+    public boolean hasAttribute(String attribute) {
+        return getValue("element.hasAttribute('" + attribute + "')").equals("true");
+    }
+
+    public boolean hasProperty(String property) {
+        return !getValue("element." + property).equals("undefined");
+    }
+
+    public String getProperty(String property) {
+        return getValue("element." + property);
     }
 
     public String getValue(String valueFunc) {
@@ -74,11 +86,19 @@ public class JSElement {
     }
 
     public List<String> getAttributeList(String attribute) {
+        return jsDriver.getList("element.getAttribute('" + attribute + "')").asString();
+    }
+
+    public List<String> getPropertyList(String attribute) {
         return jsDriver.getList("element." + attribute).asString();
     }
 
     public Json getAttributes(String... attributes) {
         return getAttributes(newList(attributes));
+    }
+
+    public Json getProperties(String... attributes) {
+        return getProperties(newList(attributes));
     }
 
     public int getSize() {
@@ -87,6 +107,11 @@ public class JSElement {
 
     public Json getAttributes(List<String> attributes) {
         JsonObject json = jsDriver.getOne(attributesToJson(attributes)).asJson();
+        return new Json(attributes, s -> json.get(s).getAsString());
+    }
+
+    public Json getProperties(List<String> attributes) {
+        JsonObject json = jsDriver.getOne(propertiesToJson(attributes)).asJson();
         return new Json(attributes, s -> json.get(s).getAsString());
     }
 
@@ -111,12 +136,20 @@ public class JSElement {
         return map(objects, json -> new Json(attributes, v -> json.get(v).getAsString()));
     }
 
+    public List<Json> getMultiProperties(List<String> properties) {
+        List<JsonObject> objects = jsDriver.getList(propertiesToJson(properties)).asJson();
+        return map(objects, json -> new Json(properties, v -> json.get(v).getAsString()));
+    }
+
     public JsonObject getJson(String json) {
         return jsDriver.getOne(validateXpath(json)).asJson();
     }
 
     public List<Json> getMultiAttributes(String... attributes) {
         return getMultiAttributes(newList(attributes));
+    }
+    public List<Json> getMultiProperties(String... properties) {
+        return getMultiProperties(newList(properties));
     }
     // endregion
 
@@ -187,7 +220,11 @@ public class JSElement {
 
     // region protected
     protected String attributesToJson(List<String> attributes) {
-        return  "{ " + print(map(attributes, attr -> "'" + attr + "': element." + attr), ", ") + " }";
+        return  "{ " + print(map(attributes, attr -> "'" + attr + "': element.getAttribute('" + attr + "')"), ", ") + " }";
+    }
+
+    protected String propertiesToJson(List<String> properties) {
+        return  "{ " + print(map(properties, props -> "'" + props + "': element." + props), ", ") + " }";
     }
 
     protected String validateXpath(String objectMap) {

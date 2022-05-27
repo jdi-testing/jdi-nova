@@ -161,10 +161,19 @@ public abstract class Conditions {
         return condition("%element% has %no% '" + attributeName + "' attribute",
             el -> el.hasAttribute(attributeName));
     }
+    public static Condition property(String attributeName) {
+        return condition("%element% has %no% '" + attributeName + "' property",
+            el -> el.hasProperty(attributeName));
+    }
 
     public static Condition attribute(String attributeName, String value) {
         return condition("%element% has %no% '" + attributeName + "=" + value + "' attribute",
             el -> el.attr(attributeName).trim().equals(value));
+    }
+
+    public static Condition property(String property, String value) {
+        return condition("%element% has %no% '" + property + "=" + value + "' property",
+            el -> el.prop(property).trim().equals(value));
     }
 
     public static Condition containsAttribute(String attributeName, String value) {
@@ -172,9 +181,19 @@ public abstract class Conditions {
             el -> el.attr(attributeName).trim().contains(value));
     }
 
+    public static Condition containsProperty(String property, String value) {
+        return condition("%element% has %no% '" + property + " that contains " + value + "' property",
+            el -> el.prop(property).trim().contains(value));
+    }
+
     public static Condition matchAttribute(String attributeName, String regEx) {
         return condition("%element% has %no% '" + attributeName + " matches " + regEx + "' attribute",
             el -> el.attr(attributeName).trim().matches(regEx));
+    }
+
+    public static Condition matchProperty(String property, String regEx) {
+        return condition("%element% has %no% '" + property + " matches " + regEx + "' property",
+                el -> el.prop(property).trim().matches(regEx));
     }
 
     public static Condition href(String href) {
@@ -223,7 +242,7 @@ public abstract class Conditions {
 
     public static Condition clazz(String className) {
         return condition("%element% has %no% 'class=" + className + "' attribute",
-                el -> el.hasClass(className));
+            el -> el.hasClass(className));
     }
 
     public static Condition id(String id) {
@@ -232,8 +251,9 @@ public abstract class Conditions {
 
     public static Condition be(Object entity) {
         return condition("%element% is %no% '" + entity.toString() + "'",
-            el -> el.getEntity(entity.getClass()).equals(entity));
+            el -> entity.equals(el.getEntity(entity.getClass())));
     }
+
     public static <T> Condition beOrdered(List<T> entities) {
         return haveCondition(true, true, entities);
     }
@@ -260,6 +280,7 @@ public abstract class Conditions {
         return condition("%element% has no item",
                 el -> el.size() == 0);
     }
+
     public static Condition someItems() {
         return condition("%element% is not empty",
                 el -> el.size() > 0);
@@ -273,14 +294,14 @@ public abstract class Conditions {
             el -> sizeFunc.apply(el.size()));
     }
 
-    public static Condition cssClass(String cssClass) {
-        return condition("%element% has %no% css class '" + cssClass + "'",
-            el -> isNotBlank(el.cssStyle(cssClass)));
+    public static Condition style(String cssStyle) {
+        return condition("%element% has %no% css style '" + cssStyle + "'",
+            el -> isNotBlank(el.style(cssStyle)));
     }
 
-    public static Condition cssValue(String name, String value) {
+    public static Condition style(String name, String value) {
         return condition("%element% has %no% style '" + name + "=" + value + "'",
-            el -> el.cssStyle(name).equals(value));
+            el -> el.style(name).equals(value));
     }
 
     public static Condition focused = condition("%element% is %not% in focus", HasCore::focused);

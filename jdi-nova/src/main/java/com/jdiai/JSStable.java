@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.jdiai.jsbuilder.ScriptResult;
 import com.jdiai.jsdriver.JDINovaException;
 import com.jdiai.jsproducer.Json;
+import com.jdiai.tools.PrintUtils;
 import com.jdiai.tools.Timer;
 import com.jdiai.tools.func.JAction;
 import com.jdiai.visual.Direction;
@@ -21,6 +22,7 @@ import static com.jdiai.listeners.JDIEvents.*;
 import static com.jdiai.tools.PrintUtils.print;
 import static com.jdiai.tools.StringUtils.format;
 import static com.jdiai.tools.Timer.sleep;
+import static java.util.Arrays.asList;
 import static org.openqa.selenium.Keys.BACK_SPACE;
 
 public class JSStable extends JSLight {
@@ -261,8 +263,10 @@ public class JSStable extends JSLight {
         if (value == null) {
             return this;
         }
-        stableFilterAction("input(" + value + ")",
-        "Input '" + value + " to '{name}'",
+        String text = charToString(value);
+        // String text = PrintUtils.print(asList(value), Object::toString);
+        stableFilterAction("input(" + text + ")",
+        "Input '" + text + " to '{name}'",
             () -> {
                 we().clear();
                 fixedSendKeys(value);
@@ -274,7 +278,8 @@ public class JSStable extends JSLight {
         if (value == null) {
             return ;
         }
-        stableFilterAction("input(" + value + ")", "Input '" + value + " to '{name}'",
+        String text = charToString(value);
+        stableFilterAction("input(" + text + ")", "Input '" + text + " to '{name}'",
             () -> fixedSendKeys(value));
     }
     private void fixedSendKeys(CharSequence... value) {
@@ -348,18 +353,18 @@ public class JSStable extends JSLight {
     }
 
     @Override
-    public String cssStyle(String style) {
-        return stableFunction("cssStyle(" + style + ")", null, () -> super.cssStyle(style));
+    public String style(String style) {
+        return stableFunction("cssStyle(" + style + ")", null, () -> super.style(style));
     }
 
     @Override
-    public Json cssStyles(String... styles) {
-        return stableFunction("cssStyles(" + print(styles) + ")", null, () -> super.cssStyles(styles));
+    public Json styles(String... styles) {
+        return stableFunction("cssStyles(" + print(styles) + ")", null, () -> super.styles(styles));
     }
 
     @Override
-    public Json allCssStyles() {
-        return stableFunction("allCssStyles()", null, super::allCssStyles);
+    public Json allStyles() {
+        return stableFunction("allCssStyles()", null, super::allStyles);
     }
 
     @Override
@@ -461,6 +466,24 @@ public class JSStable extends JSLight {
     @Override
     public void setEntity(String objectMap) {
         stableAction("setEntity(objectMap)", null, () -> super.setEntity(objectMap));
+    }
+
+    @Override
+    public List<String> allValues(String getTextType) {
+        return stableFunction("allValues()",
+        "Get '{name}' all values", () -> super.allValues(getTextType));
+    }
+
+    @Override
+    public List<String> allValues() {
+        return stableFunction("allValues()",
+        "Get '{name}' all values", () -> super.allValues(textType()));
+    }
+
+    @Override
+    public int size() {
+        return stableFunction("size()",
+        "Get '{name}' amount of elements", super::size);
     }
 
 }

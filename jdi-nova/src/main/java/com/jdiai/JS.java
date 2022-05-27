@@ -81,8 +81,8 @@ public interface JS extends WebElement, HasLocators, HasParent, HasCore {
     List<String> getAttributesAsList(String attr);
     Json allAttributes();
     JS highlight(String color);
-    Json cssStyles(String... style);
-    Json allCssStyles();
+    Json styles(String... style);
+    Json allStyles();
     boolean isDeselected();
     JS setTextType(GetTextTypes textType);
     String getText(String textType);

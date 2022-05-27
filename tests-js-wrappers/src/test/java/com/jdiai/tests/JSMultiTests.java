@@ -28,7 +28,7 @@ public class JSMultiTests implements TestInit {
 
     @Test
     public void usersMapTest() {
-        List<Json> users = element("#user-table input").getMultiAttributes("type", "id", "checked");
+        List<Json> users = element("#user-table input").getMultiProperties("type", "id", "checked");
         assertEquals(users.size(), 6);
         List<String> userIds = map(users, u -> u.get("id"));
         assertEquals(userIds.toString(), "[roman, ivan, vlad, helen, yoshi, gio]");

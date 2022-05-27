@@ -23,8 +23,9 @@ public class States {
     }
 
     public static void loggedInAt(String url) {
-        if (!isLoggedIn())
+        if (!isLoggedIn()) {
             login();
+        }
         openPage(url);
     }
 

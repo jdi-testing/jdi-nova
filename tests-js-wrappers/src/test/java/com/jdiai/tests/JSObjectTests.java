@@ -141,21 +141,21 @@ public class JSObjectTests implements TestInit {
     }
     @Test
     public void attributeTest() {
-        assertEquals(element(TextInfo.class, "#user-icon").getAttribute("tagName"), "IMG");
+        assertEquals(element(TextInfo.class, "#user-icon").getProperty("tagName"), "IMG");
 
         JSElement userName = element(TextInfo.class, "#user-name");
-        assertEquals(userName.getAttribute("innerText"), "Roman Iovlev");
-        assertEquals(userName.getAttribute("textContent"), "Roman Iovlev");
-        assertEquals(userName.getAttribute("innerHTML"), "Roman Iovlev");
+        assertEquals(userName.getProperty("innerText"), "Roman Iovlev");
+        assertEquals(userName.getProperty("textContent"), "Roman Iovlev");
+        assertEquals(userName.getProperty("innerHTML"), "Roman Iovlev");
     }
     @Test
     public void attributeLocatorListTest() {
-        assertEquals(element(TextInfo.class, withParent("#user-icon")).getAttribute("tagName"), "IMG");
+        assertEquals(element(TextInfo.class, withParent("#user-icon")).getProperty("tagName"), "IMG");
 
         JSElement userName = element(TextInfo.class, withParent("#user-name"));
-        assertEquals(userName.getAttribute("innerText"), "Roman Iovlev");
-        assertEquals(userName.getAttribute("textContent"), "Roman Iovlev");
-        assertEquals(userName.getAttribute("innerHTML"), "Roman Iovlev");
+        assertEquals(userName.getProperty("innerText"), "Roman Iovlev");
+        assertEquals(userName.getProperty("textContent"), "Roman Iovlev");
+        assertEquals(userName.getProperty("innerHTML"), "Roman Iovlev");
     }
     @Test
     public void valueTest() {
@@ -174,27 +174,27 @@ public class JSObjectTests implements TestInit {
     @Test
     public void attributeListTest() {
         loggedInAt(SIMPLE_PAGE);
-        List<String> headers = element(TextInfo.class, "#products th").getAttributeList("innerText");
+        List<String> headers = element(TextInfo.class, "#products th").getPropertyList("innerText");
         assertEquals(headers.size(), 4);
         assertEquals(headers.toString(), "[Name, Type, Cost, Weight]");
     }
     @Test
     public void attributesListLocatorListTest() {
         loggedInAt(SIMPLE_PAGE);
-        List<String> headers = element(TextInfo.class, "#products", "th").getAttributeList("innerText");
+        List<String> headers = element(TextInfo.class, "#products", "th").getPropertyList("innerText");
         assertEquals(headers.size(), 4);
         assertEquals(headers.toString(), "[Name, Type, Cost, Weight]");
     }
     @Test
     public void attributesTest() {
-        Json attributes = element(TextInfo.class, "#user-icon").getAttributes("id", "src", "tagName");
+        Json attributes = element(TextInfo.class, "#user-icon").getProperties("id", "src", "tagName");
         assertEquals(attributes.get("id"), "user-icon");
         assertEquals(attributes.get("src"), DOMAIN + "/images/icons/user-icon.jpg");
         assertEquals(attributes.get("tagName"), "IMG");
     }
     @Test
     public void attributesLocatorListTest() {
-        Json attributes = element(TextInfo.class, withParent("#user-icon")).getAttributes("id", "src", "tagName");
+        Json attributes = element(TextInfo.class, withParent("#user-icon")).getProperties("id", "src", "tagName");
         assertEquals(attributes.get("id"), "user-icon");
         assertEquals(attributes.get("src"), DOMAIN + "/images/icons/user-icon.jpg");
         assertEquals(attributes.get("tagName"), "IMG");
@@ -202,7 +202,7 @@ public class JSObjectTests implements TestInit {
     @Test
     public void multiAttributesTest() {
         loggedInAt(SIMPLE_PAGE);
-        List<Json> headers = element(TextInfo.class, "#furniture-double-hidden th").getMultiAttributes("innerText", "className ", "tagName");
+        List<Json> headers = element(TextInfo.class, "#furniture-double-hidden th").getMultiProperties("innerText", "className ", "tagName");
         assertEquals(headers.size(), 6);
         assertEquals(headers.get(4).get("innerText"), "");
         assertEquals(headers.get(4).get("className "), "hidden");
@@ -215,7 +215,7 @@ public class JSObjectTests implements TestInit {
     @Test
     public void multiAttributesLocatorListTest() {
         loggedInAt(SIMPLE_PAGE);
-        List<Json> headers = element(TextInfo.class, "#furniture-double-hidden", "th").getMultiAttributes("innerText", "className", "tagName");
+        List<Json> headers = element(TextInfo.class, "#furniture-double-hidden", "th").getMultiProperties("innerText", "className", "tagName");
         assertEquals(headers.size(), 6);
         assertEquals(headers.get(4).get("innerText"), "");
         assertEquals(headers.get(4).get("className"), "hidden");

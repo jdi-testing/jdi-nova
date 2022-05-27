@@ -54,7 +54,7 @@ public class JSEntity<T> extends JSElement {
     }
 
     public T getEntity(List<String> attributes) {
-        return jsDriver.getOne(attributesToJson(attributes)).asObject(cl);
+        return jsDriver.getOne(propertiesToJson(attributes)).asObject(cl);
     }
 
     public T getEntityFromAttr(String... attributes) {
@@ -76,7 +76,7 @@ public class JSEntity<T> extends JSElement {
     };
 
     public List<T> getEntityList(List<String> attributes) {
-        return jsDriver.getList(attributesToJson(attributes)).asObject(cl);
+        return jsDriver.getList(propertiesToJson(attributes)).asObject(cl);
     }
 
     public List<T> getEntityListFromAttr(String... attributes) {

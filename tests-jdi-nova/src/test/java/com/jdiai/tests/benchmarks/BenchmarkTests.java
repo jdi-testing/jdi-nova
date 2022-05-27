@@ -91,8 +91,11 @@ public class BenchmarkTests implements TestInit {
             return "id:"+id+",ui:"+ui+",tag:"+tag+",font:"+font+",bg-color:"+bgColor;
         }, () -> {
             Json data = $("#users-table").getJson(
-                "{ 'id': element.id, 'ui': element.getAttribute('ui'), 'tag': element.tagName, " +
-                "'font': styles.fontSize, 'bg-color': styles.backgroundColor }");
+        "{ 'id': element.id, " +
+                "'ui': element.getAttribute('ui'), " +
+                "'tag': element.tagName, " +
+                "'font': styles.fontSize, " +
+                "'bg-color': styles.backgroundColor }");
             return data.toString();
         },
         lightTestsCount));
@@ -109,8 +112,10 @@ public class BenchmarkTests implements TestInit {
             return result;
         }, () -> {
             JsonObject jo = $("//*[@id='users-table']//tr[2]").getJSObject(
-            "{ '1': xpath(element, 'td[1]').innerText, '2': xpath(element, 'td[2]').innerText, " +
-                "'3': xpath(element, 'td[3]').innerText, '4': xpath(element, 'td[4]').innerText }");
+            "{ '1': xpath(element, 'td[1]').innerText, " +
+                "'2': xpath(element, 'td[2]').innerText, " +
+                "'3': xpath(element, 'td[3]').innerText, " +
+                "'4': xpath(element, 'td[4]').innerText }");
                 return asList(jo.get("1").getAsString(), jo.get("2").getAsString(), jo.get("3").getAsString(), jo.get("4").getAsString());
         },
         lightTestsCount));

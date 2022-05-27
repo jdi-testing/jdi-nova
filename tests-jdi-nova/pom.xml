@@ -6,7 +6,7 @@
     <artifactId>tests-jdi-nova</artifactId>
     <name>Tests: JDI Nova</name>
     <groupId>com.jdiai</groupId>
-    <version>1.1.6</version>
+    <version>1.1.7</version>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
 
@@ -23,20 +23,20 @@
         <dependency>
             <groupId>com.jdiai</groupId>
             <artifactId>jdi-nova</artifactId>
-            <version>1.1.6</version>
+            <version>1.1.7</version>
         </dependency>
 
         <dependency>
             <groupId>com.codeborne</groupId>
             <artifactId>selenide</artifactId>
-            <version>5.20.1</version>
+            <version>6.5.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
+            <version>7.5</version>
             <scope>test</scope>
-            <version>7.4.0</version>
         </dependency>
 
         <dependency>

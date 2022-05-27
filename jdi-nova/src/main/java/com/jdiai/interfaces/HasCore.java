@@ -99,9 +99,15 @@ public interface HasCore extends WebElement, HasName, HasLocators, ShouldValidat
     default boolean hasAttribute(String attrName) {
         return core().hasAttribute(attrName);
     }
+    default boolean hasProperty(String attrName) {
+        return core().hasProperty(attrName);
+    }
 
     default String attr(String attrName) {
         return core().attr(attrName);
+    }
+    default String prop(String property) {
+        return core().prop(property);
     }
 
     default String getText() {
@@ -196,8 +202,8 @@ public interface HasCore extends WebElement, HasName, HasLocators, ShouldValidat
     default <T> List<T> getEntityList(Class<T> cl) {
         return core().getEntityList(cl);
     }
-    default String cssStyle(String style) {
-        return core().cssStyle(style);
+    default String style(String style) {
+        return core().style(style);
     }
     default int size() {
         return core().size();

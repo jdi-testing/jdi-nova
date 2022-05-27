@@ -25,9 +25,9 @@ public class FilterTests implements TestInit {
 
     @Test
     public void oneTest() {
-        List<String> header = element("#furniture-double-hidden th").getAttributeList("textContent");
+        List<String> header = element("#furniture-double-hidden th").getPropertyList("textContent");
         assertEquals(header.size(), 6);
-        List<String> filteredHeader = $wf("#furniture-double-hidden th").getAttributeList("textContent");
+        List<String> filteredHeader = $wf("#furniture-double-hidden th").getPropertyList("textContent");
         assertEquals(filteredHeader.size(), 4);
     }
 

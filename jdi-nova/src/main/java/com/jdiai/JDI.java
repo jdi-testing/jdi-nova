@@ -20,8 +20,10 @@ import com.jdiai.logger.Slf4JLogger;
 import com.jdiai.tools.ILogger;
 import com.jdiai.tools.Safe;
 import com.jdiai.tools.StringUtils;
+import com.jdiai.tools.Timer;
 import com.jdiai.tools.func.JAction2;
 import com.jdiai.tools.func.JAction3;
+import com.jdiai.tools.pairs.Pair;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
 
@@ -34,6 +36,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.jdiai.JDIStatistic.actionsTime;
+import static com.jdiai.JDIStatistic.trackAsserts;
 import static com.jdiai.asserts.Conditions.above;
 import static com.jdiai.asserts.Conditions.onLeftOf;
 import static com.jdiai.asserts.ShouldUtils.SOFT_ASSERTION_MODE;
@@ -63,6 +67,7 @@ import static com.jdiai.tools.ReflectionUtils.getFieldsDeep;
 import static com.jdiai.tools.ReflectionUtils.isInterface;
 import static com.jdiai.tools.StringUtils.format;
 import static java.lang.Integer.parseInt;
+import static java.lang.Long.valueOf;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -103,6 +108,7 @@ public class JDI {
             acceptAlert();
         });
     }
+
     public static void screenshotAfterFail() {
         registerJDIListener(AFTER_ACTION_FAIL_EVENT, args -> {
             if (args.length > 3) {
@@ -114,6 +120,29 @@ public class JDI {
                     logger().info("Screenshot: " + makeScreenshot().getAbsolutePath());
                 } catch (Throwable ignore) { }
             }
+        });
+    }
+
+    public static void trackStatistic() {
+        registerJDIListener(AFTER_ACTION_EVENT, args -> {
+            try {
+                String fullName = ((String) args[0]);
+                String actionName = fullName.indexOf('(') > 0
+                    ? fullName.substring(0, fullName.indexOf('('))
+                    : fullName;
+                long actionTime = (long) args[5];
+                if (actionsTime.get().has(actionName)) {
+                    Pair<Long, Long> pair = actionsTime.get().get(actionName);
+                    long averageTime = pair.key;
+                    long count = pair.value;
+                    long newCount = count + 1;
+                    actionsTime.update(statistic ->
+                        statistic.update(actionName, Pair.$((averageTime * count + actionTime) / newCount, newCount)));
+                } else {
+                    actionsTime.update(statistic ->
+                        statistic.add(actionName, Pair.$(actionTime, (long) 1)));
+                }
+            } catch (Exception ignore){ }
         });
     }
 
@@ -213,7 +242,7 @@ public class JDI {
                 long timePassed = (Long) args[5];
                 listener.afterSuccessAction(actionName, step, element, result, timeout, timePassed);
             } catch (Exception ex) {
-                throw new JDINovaException(ex, "Failed to parse "+ AFTER_ACTION_EVENT + " args");
+                throw new JDINovaException(ex, "Failed to parse "+ AFTER_SUCCESS_ACTION_EVENT + " args");
             }
         });
         registerJDIListener(AFTER_ACTION_FAIL_EVENT, args -> {
@@ -327,15 +356,43 @@ public class JDI {
     }
 
     public static void urlShouldBe(String url) {
-        waitForResult(() -> getUrl().contains(url));
+        trackAsserts(
+            () -> waitForResult(() -> getUrl().contains(url)),
+            "validate page url",
+            "Validate that page url contains '" + url + "'",
+            String.format("Page has url '%s' but expected '%s'", getUrl(), url),
+            null
+        );
     }
 
     public static String getTitle() {
         return (String) jsEvaluate("document.title;");
     }
 
+    public static String getPageHeader() {
+        return $("h1").getText();
+    }
+
+    public static void pageShouldHaveHeader(String pageHeader) {
+        String h1 = getPageHeader();
+        trackAsserts(
+            () -> assertContains("Page Header", h1, pageHeader),
+            "validate page header",
+            "Validate that page has header(<h1> tag) '" + pageHeader + "'",
+            String.format("Page has header(<h1> tag) '%s' but expected '%s'", h1, pageHeader),
+            null
+        );
+    }
+
     public static void titleShouldContains(String title) {
-        assertContains("Title", getTitle(), title);
+        String actualTitle = getTitle();
+        trackAsserts(
+            () -> assertContains("Page Title", actualTitle, title),
+            "validate page title",
+            "Validate that page has title '" + title + "'",
+            String.format("Page has title '%s' but expected '%s'", actualTitle, title),
+            null
+        );
     }
 
     public static String getDomain() { return (String) jsEvaluate("document.domain;"); }
@@ -360,24 +417,30 @@ public class JDI {
         SOFT_ASSERTION_MODE = true;
     }
 
+    public static void useSlf4JLogger() {
+        setLogger(new Slf4JLogger(LOGGER_NAME));
+    }
+
+    public static void useConsoleLogger() {
+        setLogger(new ConsoleLogger(getLoggerName(CONSOLE)));
+    }
+
     private static void init() {
         if (initialized) {
             return;
         }
         switch (LOGGER_TYPE) {
-            case CONSOLE:
-                setLogger(new ConsoleLogger(getLoggerName(CONSOLE)));
-                break;
             case SLF4J:
-                setLogger(new Slf4JLogger(LOGGER_NAME));
+                useSlf4JLogger();
                 break;
+            case CONSOLE:
             default:
-                setLogger(new ConsoleLogger(getLoggerName(CONSOLE)));
+                useConsoleLogger();
                 break;
         }
         logJDIActions();
         try {
-            String[] split = browserSize.split("x");
+            String[] split = browserSize.toLowerCase().split("x");
             BROWSER_SIZE = new Dimension(parseInt(split[0]), parseInt(split[1]));
         } catch (Exception ignore) {
             logger().info("Failed to setup browser size: " + browserSize);
@@ -419,8 +482,13 @@ public class JDI {
         domain = url;
         openSiteHeadless();
     }
-    public static void openSiteHeadless() {
+
+    public static void headless() {
         DRIVER_OPTIONS.chrome = cap -> cap.addArguments("--headless");
+    }
+
+    public static void openSiteHeadless() {
+        headless();
         openSite();
     }
     public static void openSiteHeadless(int width, int height) {
@@ -541,14 +609,15 @@ public class JDI {
         String openPageAction = "openPage()";
         String openPageStep = "Open page '" + fullUrl + "'";
         fireEvent(BEFORE_ACTION_EVENT, openPageAction, openPageStep, null);
+        Timer timer = new Timer();
         try {
             driver().get(fullUrl);
             getWindowHandles();
-            fireEvent(AFTER_SUCCESS_ACTION_EVENT, openPageAction, openPageStep, null, null, 0L, 0L);
+            fireEvent(AFTER_SUCCESS_ACTION_EVENT, openPageAction, openPageStep, null, null, valueOf(timeout), timer.timePassedInMSec());
         } catch (Exception ex){
-            fireEvent(AFTER_ACTION_FAIL_EVENT, openPageAction, openPageStep, null, null, 0L, 0L, ex, null);
+            fireEvent(AFTER_ACTION_FAIL_EVENT, openPageAction, openPageStep, null, null, valueOf(timeout), timer.timePassedInMSec(), ex, null);
         } finally {
-            fireEvent(AFTER_ACTION_EVENT, openPageAction, openPageStep, null, null, 0L, 0L);
+            fireEvent(AFTER_ACTION_EVENT, openPageAction, openPageStep, null, null, valueOf(timeout), timer.timePassedInMSec());
         }
     }
 

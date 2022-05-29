@@ -28,7 +28,7 @@ public interface TestInit {
         killDrivers();
         SMART_LOCATOR = ID_LOCATOR;
         DRIVER_OPTIONS.chrome = cap -> cap.addArguments("--headless");
-        logAll();
+        // logAll();
         // JDI.trackStatistic();
         initSite(JDISite.class);
     }

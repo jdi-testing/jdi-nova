@@ -1,16 +1,15 @@
-package com.jdiai.jsbuilder;
+package com.jdiai.logger;
 
-import com.jdiai.tools.ILogger;
-
-import static com.jdiai.jsbuilder.LogLevels.*;
+import static com.jdiai.logger.LogLevels.*;
 import static com.jdiai.tools.StringUtils.format;
 import static com.jdiai.tools.Timer.nowTimeShort;
 
-public class ConsoleLogger implements ILogger {
+public class ThreadConsoleLogger implements JLogger {
     private final String name;
     LogLevels LOG_LEVEL = LogLevels.INFO;
+    boolean logEnabled = true;
 
-    public ConsoleLogger(String name) {
+    public ThreadConsoleLogger(String name) {
         this.name = name;
     }
 
@@ -18,29 +17,36 @@ public class ConsoleLogger implements ILogger {
         this.LOG_LEVEL = newLevel;
     }
 
+    public void loggerOff() {
+        logEnabled = false;
+    }
+    public void loggerOn() {
+        logEnabled = true;
+    }
+
     public void trace(String msg, Object... args) {
-        if (LOG_LEVEL.isLower(TRACE)) {
+        if (!logEnabled || LOG_LEVEL.isLower(TRACE)) {
             return;
         }
         printMessage(TRACE, msg, args);
     }
 
     public void debug(String msg, Object... args) {
-        if (LOG_LEVEL.isLower(DEBUG)) {
+        if (!logEnabled || LOG_LEVEL.isLower(DEBUG)) {
             return;
         }
         printMessage(DEBUG, msg, args);
     }
 
     public void info(String msg, Object... args) {
-        if (LOG_LEVEL.isLower(INFO)) {
+        if (!logEnabled || LOG_LEVEL.isLower(INFO)) {
             return;
         }
         printMessage(INFO, msg, args);
     }
 
     public void error(String msg, Object... args) {
-        if (LOG_LEVEL.isLower(ERROR)) {
+        if (!logEnabled || LOG_LEVEL.isLower(ERROR)) {
             return;
         }
         printMessage(ERROR, msg, args);

@@ -14,7 +14,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static com.jdiai.jsbuilder.QueryLogger.*;
+import static com.jdiai.logger.QueryLogger.*;
 import static com.jdiai.jsbuilder.RetryFunctions.DEFAULT_LIST_SCRIPT_EXECUTE;
 import static com.jdiai.jsbuilder.RetryFunctions.DEFAULT_SCRIPT_EXECUTE;
 import static com.jdiai.tools.PrintUtils.print;

@@ -7,7 +7,7 @@ import com.jdiai.annotations.Site;
 import com.jdiai.interfaces.HasCore;
 import com.jdiai.interfaces.HasName;
 import com.jdiai.interfaces.ISetup;
-import com.jdiai.jsbuilder.QueryLogger;
+import com.jdiai.logger.QueryLogger;
 import com.jdiai.jsdriver.JDINovaException;
 import com.jdiai.jswraper.interfaces.GetValue;
 import org.openqa.selenium.WebElement;

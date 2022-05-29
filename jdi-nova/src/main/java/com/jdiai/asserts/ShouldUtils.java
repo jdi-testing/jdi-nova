@@ -71,6 +71,7 @@ public class ShouldUtils {
         fireEvent(BEFORE_ACTION_EVENT, shouldBeAction, assertionToLog, core);
         try {
             try {
+                loggerOff();
                 foundAll = checkConditions(core, conditions, timer);
             } finally {
                 loggerOn();
@@ -131,10 +132,10 @@ public class ShouldUtils {
         } catch (Exception ex) {
             loggerOff();
             boolean ignoreFail = IGNORE_FAILURE.apply(core, ex);
-            if (timer.isRunning() && ignoreFail) {
-                return checkConditions(core, conditions, timer);
+            if (!timer.isRunning() || !ignoreFail) {
+                throw ex;
             }
-            throw ex;
+            return checkConditions(core, conditions, timer);
         }
     }
 

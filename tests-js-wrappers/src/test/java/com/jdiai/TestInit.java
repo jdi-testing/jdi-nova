@@ -3,8 +3,8 @@ package com.jdiai;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
-import static com.jdiai.jsbuilder.QueryLogger.ALL;
-import static com.jdiai.jsbuilder.QueryLogger.LOG_QUERY;
+import static com.jdiai.logger.QueryLogger.ALL;
+import static com.jdiai.logger.QueryLogger.LOG_QUERY;
 import static com.jdiai.jswraper.driver.DriverManager.killDrivers;
 import static com.jdiai.jswraper.driver.JDIDriver.DRIVER_OPTIONS;
 

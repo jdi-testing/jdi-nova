@@ -1,4 +1,4 @@
-package com.jdiai.jsbuilder;
+package com.jdiai.logger;
 
 public enum LogLevels {
     OFF(0),

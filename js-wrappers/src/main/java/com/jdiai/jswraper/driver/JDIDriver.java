@@ -7,7 +7,7 @@ import org.openqa.selenium.WebDriver;
 
 import java.util.function.Consumer;
 
-import static com.jdiai.jsbuilder.QueryLogger.logger;
+import static com.jdiai.logger.QueryLogger.logger;
 import static com.jdiai.jswraper.driver.DriverTypes.*;
 import static com.jdiai.jswraper.driver.RunModes.LOCAL_DOWNLOAD;
 import static com.jdiai.tools.pairs.Pair.$;

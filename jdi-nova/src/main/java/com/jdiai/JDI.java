@@ -4,8 +4,9 @@ import com.jdiai.annotations.UI;
 import com.jdiai.asserts.Condition;
 import com.jdiai.asserts.ConditionTypes;
 import com.jdiai.interfaces.HasCore;
-import com.jdiai.jsbuilder.ConsoleLogger;
+import com.jdiai.logger.ThreadConsoleLogger;
 import com.jdiai.jsbuilder.IJSBuilder;
+import com.jdiai.logger.JLogger;
 import com.jdiai.jsbuilder.JSBuilder;
 import com.jdiai.jsbuilder.jsfunctions.*;
 import com.jdiai.jsdriver.JDINovaException;
@@ -17,7 +18,6 @@ import com.jdiai.jswraper.driver.JDIDriver;
 import com.jdiai.listeners.JDIEventsListener;
 import com.jdiai.listeners.JDILogListener;
 import com.jdiai.logger.Slf4JLogger;
-import com.jdiai.tools.ILogger;
 import com.jdiai.tools.Safe;
 import com.jdiai.tools.StringUtils;
 import com.jdiai.tools.Timer;
@@ -43,7 +43,7 @@ import static com.jdiai.asserts.Conditions.onLeftOf;
 import static com.jdiai.asserts.ShouldUtils.SOFT_ASSERTION_MODE;
 import static com.jdiai.asserts.ShouldUtils.waitForResult;
 import static com.jdiai.jsbuilder.GetTypes.dataType;
-import static com.jdiai.jsbuilder.QueryLogger.*;
+import static com.jdiai.logger.QueryLogger.*;
 import static com.jdiai.jsdriver.JDINovaException.THROW_ASSERT;
 import static com.jdiai.jsdriver.JDINovaException.assertContains;
 import static com.jdiai.jsdriver.JSDriverUtils.getByLocator;
@@ -79,11 +79,11 @@ public class JDI {
 
     public static String domain;
 
-    public static ILogger logger() {
+    public static JLogger logger() {
         return logger;
     }
 
-    public static void setLogger(ILogger newLogger) {
+    public static void setLogger(JLogger newLogger) {
         logger = newLogger;
     }
 
@@ -300,6 +300,7 @@ public class JDI {
 
     public static void loggerOff() {
         if (savedLogLevel.get() == null) {
+            logger().loggerOff();
             savedLogLevel.set(LOG_QUERY.get());
             logJSRequests(OFF);
         }
@@ -320,6 +321,7 @@ public class JDI {
     public static void loggerOn() {
         Integer logLevel = savedLogLevel.get();
         if (logLevel != null) {
+            logger().loggerOn();
             logJSRequests(logLevel);
             savedLogLevel.set(null);
         }
@@ -422,7 +424,7 @@ public class JDI {
     }
 
     public static void useConsoleLogger() {
-        setLogger(new ConsoleLogger(getLoggerName(CONSOLE)));
+        setLogger(new ThreadConsoleLogger(getLoggerName(CONSOLE)));
     }
 
     private static void init() {

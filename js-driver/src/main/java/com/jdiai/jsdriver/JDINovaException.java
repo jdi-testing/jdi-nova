@@ -2,7 +2,7 @@ package com.jdiai.jsdriver;
 
 import java.util.function.Consumer;
 
-import static com.jdiai.jsbuilder.QueryLogger.logger;
+import static com.jdiai.logger.QueryLogger.logger;
 import static com.jdiai.tools.StringUtils.format;
 
 public class JDINovaException extends RuntimeException {

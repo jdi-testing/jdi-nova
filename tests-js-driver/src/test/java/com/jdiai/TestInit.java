@@ -9,8 +9,8 @@ import static com.jdiai.DriverManager.*;
 import static com.jdiai.LocatorUtils.defineLocator;
 import static com.jdiai.jsbuilder.ListSearch.CHAIN;
 import static com.jdiai.jsbuilder.ListSearch.MULTI;
-import static com.jdiai.jsbuilder.QueryLogger.ALL;
-import static com.jdiai.jsbuilder.QueryLogger.LOG_QUERY;
+import static com.jdiai.logger.QueryLogger.ALL;
+import static com.jdiai.logger.QueryLogger.LOG_QUERY;
 import static java.util.Arrays.stream;
 
 public interface TestInit {

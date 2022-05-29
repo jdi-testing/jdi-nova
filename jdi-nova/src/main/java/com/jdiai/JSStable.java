@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.jdiai.jsbuilder.ScriptResult;
 import com.jdiai.jsdriver.JDINovaException;
 import com.jdiai.jsproducer.Json;
-import com.jdiai.tools.PrintUtils;
 import com.jdiai.tools.Timer;
 import com.jdiai.tools.func.JAction;
 import com.jdiai.visual.Direction;
@@ -22,7 +21,7 @@ import static com.jdiai.listeners.JDIEvents.*;
 import static com.jdiai.tools.PrintUtils.print;
 import static com.jdiai.tools.StringUtils.format;
 import static com.jdiai.tools.Timer.sleep;
-import static java.util.Arrays.asList;
+import static java.lang.Long.valueOf;
 import static org.openqa.selenium.Keys.BACK_SPACE;
 
 public class JSStable extends JSLight {
@@ -79,7 +78,7 @@ public class JSStable extends JSLight {
         } catch (Throwable failException) {
             long timePassed = timer.timePassedInMSec();
             ScriptResult lastResult = lastScriptExecution.get();
-            fireEvent(AFTER_ACTION_FAIL_EVENT, actionName, step, this, lastResult.result, timeout, timePassed, failException, null);
+            fireEvent(AFTER_ACTION_FAIL_EVENT, actionName, step, this, lastResult.result, valueOf(timeout), timePassed, failException, null);
         } finally {
             long timePassed = timer.timePassedInMSec();
             ScriptResult lastResult = lastScriptExecution.get();
@@ -102,7 +101,7 @@ public class JSStable extends JSLight {
         } catch (Throwable failException) {
             long timePassed = timer.timePassedInMSec();
             ScriptResult lastResult = lastScriptExecution.get();
-            fireEvent(AFTER_ACTION_FAIL_EVENT, actionName, step, this, lastResult.result, timeout, timePassed, failException, null);
+            fireEvent(AFTER_ACTION_FAIL_EVENT, actionName, step, this, lastResult.result, valueOf(timeout), timePassed, failException, null);
         } finally {
             long timePassed = timer.timePassedInMSec();
             ScriptResult lastResult = lastScriptExecution.get();
@@ -147,7 +146,7 @@ public class JSStable extends JSLight {
         } catch (Throwable failException) {
             long timePassed = timer.timePassedInMSec();
             ScriptResult lastResult = lastScriptExecution.get();
-            fireEvent(AFTER_ACTION_FAIL_EVENT, actionName, step, this, lastResult.result, timeout, timePassed, failException, null);
+            fireEvent(AFTER_ACTION_FAIL_EVENT, actionName, step, this, lastResult.result, valueOf(timeout), timePassed, failException, null);
             return null;
         } finally {
             long timePassed = timer.timePassedInMSec();
@@ -172,7 +171,7 @@ public class JSStable extends JSLight {
         } catch (Throwable failException) {
             long timePassed = timer.timePassedInMSec();
             ScriptResult lastResult = lastScriptExecution.get();
-            fireEvent(AFTER_ACTION_FAIL_EVENT, actionName, step, this, lastResult.result, timeout, timePassed, failException, null);
+            fireEvent(AFTER_ACTION_FAIL_EVENT, actionName, step, this, lastResult.result, valueOf(timeout), timePassed, failException, null);
             return null;
         } finally {
             long timePassed = timer.timePassedInMSec();

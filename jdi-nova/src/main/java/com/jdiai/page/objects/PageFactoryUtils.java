@@ -2,6 +2,7 @@ package com.jdiai.page.objects;
 
 import com.jdiai.JS;
 import com.jdiai.WebPage;
+import com.jdiai.annotations.Header;
 import com.jdiai.annotations.Title;
 import com.jdiai.annotations.Url;
 import com.jdiai.interfaces.HasCore;
@@ -46,6 +47,17 @@ public class PageFactoryUtils {
         }
         return null;
     }
+
+    public static String getPageHeader(Class<?> cl, Field field) {
+        if (field != null && field.isAnnotationPresent(Header.class)) {
+            return field.getAnnotation(Header.class).value();
+        }
+        if (cl.isAnnotationPresent(Header.class)) {
+            return cl.getAnnotation(Header.class).value();
+        }
+        return null;
+    }
+
     static void setupCoreElement(InitInfo info) {
         By locator = LOCATOR_FROM_FIELD.apply(info.field);
         JS core = initJSFunc.apply(null);

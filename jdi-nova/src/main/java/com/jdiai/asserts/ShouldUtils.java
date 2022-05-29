@@ -68,8 +68,8 @@ public class ShouldUtils {
         Timer timer = new Timer(timeout);
         boolean foundAll;
         String assertionToLog = getCombinedAssertionName(core, conditions);
+        fireEvent(BEFORE_ACTION_EVENT, shouldBeAction, assertionToLog, core);
         try {
-            fireEvent(BEFORE_ACTION_EVENT, shouldBeAction, assertionToLog, core);
             try {
                 foundAll = checkConditions(core, conditions, timer);
             } finally {
